@@ -54,4 +54,14 @@ public class InputState {
     public void setMyTurn(boolean myTurn) {
         isMyTurn = myTurn;
     }
+
+    @Override
+    public String toString() {
+        return "InputState{" +
+                "resources=" + resources +
+                ", distanceToHarbor=" + distanceToHarbor +
+                ", playerStates=" + playerStates +
+                ", isMyTurn=" + isMyTurn +
+                '}';
+    }
 }

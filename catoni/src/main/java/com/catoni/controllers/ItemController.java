@@ -18,6 +18,12 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    // metoda za fetchovanje pozicije
+
+    // metoda za getMove -> pokrece skup pravila i odredjuje naredni potez
+
+    // cep
+
     @RequestMapping(value = "/classify-item", method = RequestMethod.GET, produces = "application/json")
     public Item getQuestions(@RequestParam(required = true) String id, @RequestParam(required = true) String name,
                              @RequestParam(required = true) double cost, @RequestParam(required = true) double salePrice) {
