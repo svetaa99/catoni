@@ -25,4 +25,9 @@ public class MoveController {
         return move;
     }
 
+    @GetMapping(value="/check-position")
+    public void printPosition(@RequestBody InputState inputState) {
+        System.out.println(inputState.getPosition());
+    }
+
 }

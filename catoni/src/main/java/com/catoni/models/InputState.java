@@ -1,6 +1,7 @@
 package com.catoni.models;
 
 import com.catoni.models.enums.ResourceTypes;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
@@ -8,10 +9,14 @@ import java.util.Map;
 public class InputState {
 
     private List<ResourceTypes> resources;
+
     private int distanceToHarbor;
-    // Map<playerName, State>
+
     private Map<String, State> playerStates;
-    // FALI POZICIJA
+
+    @Autowired
+    private Position position = new Position();
+
     private boolean isMyTurn;
 
     public InputState() {}
@@ -21,6 +26,22 @@ public class InputState {
         this.distanceToHarbor = distanceToHarbor;
         this.playerStates = playerStates;
         this.isMyTurn = isMyTurn;
+    }
+
+    public InputState(List<ResourceTypes> resources, int distanceToHarbor, Map<String, State> playerStates, Position position, boolean isMyTurn) {
+        this.resources = resources;
+        this.distanceToHarbor = distanceToHarbor;
+        this.playerStates = playerStates;
+        this.position = position;
+        this.isMyTurn = isMyTurn;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public List<ResourceTypes> getResources() {
