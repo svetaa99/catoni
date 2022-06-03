@@ -43,12 +43,16 @@ public class Position {
         }
 
         for (int row = 0; row <= 5; row++) {
-            for (int col = 0; col <= 10; col++) {
+            for (int col = 0; col <= maxColForRow(row); col++) {
                 if (row < 3) {
                     if (col % 2 == 0) {
+                        int colIndex = col == maxColForRow(row) && row == 2 ? col : col + 1;
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
-                        Road roadDown = new Road(row, col, row + 1, col + 1, null, Status.FREE);
-                        roads.add(roadRight);
+                        Road roadDown = new Road(row, col, row + 1, colIndex, null, Status.FREE);
+
+                        if (col != maxColForRow(row)){
+                            roads.add(roadRight);
+                        }
                         roads.add(roadDown);
                     } else {
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
@@ -58,11 +62,14 @@ public class Position {
                     if (col % 2 != 0) {
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
                         Road roadDown = new Road(row, col, row + 1, col - 1, null, Status.FREE);
+
                         roads.add(roadRight);
-                        roads.add(roadDown);
+                        if(row != 5)
+                            roads.add(roadDown);
                     } else {
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
-                        roads.add(roadRight);
+                        if(col != maxColForRow(row))
+                            roads.add(roadRight);
                     }
                 }
             }
@@ -74,6 +81,16 @@ public class Position {
         else if ((row == 1 || row == 4) && (col == 0 || col == 7 || col == 8)) return true;
         else if ((row == 2 || row == 3) && (col == 1 || col == 10)) return true;
         else return false;
+    }
+
+    private int maxColForRow(int row){
+        if (row == 0 || row == 5)
+            return 6;
+        else if (row == 1 || row == 4)
+            return 8;
+        else if (row == 2 || row == 3)
+            return 10;
+        return -1;
     }
 
     // Postition methods
