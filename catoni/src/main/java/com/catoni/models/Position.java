@@ -1,11 +1,14 @@
 package com.catoni.models;
 
+import com.catoni.models.dto.BuildingDto;
+import com.catoni.models.dto.RoadDto;
 import com.catoni.models.enums.BuildingTypes;
 import com.catoni.models.enums.Status;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class Position {
@@ -93,18 +96,72 @@ public class Position {
         return -1;
     }
 
-    // Postition methods
-    /*
-    getPlayerPosition(String playerName) {
-        returns all player's roads and buildings
+    public List<Building> getAvailableBuildings(){
+        return buildings.stream().filter(b -> b.getStatus() == Status.FREE).collect(Collectors.toList());
     }
 
-    getAvailableMoves(PlayerPosition position) {
-        possibleRoads = List<> roads;
-        possibleBuildings = List<> buildings;
+    public List<Road> getAvailableRoadsForPlayer(String playerName){ // u pravilima uvek bot pisemo?
+        List<Building> playersBuildings = buildings.stream().filter(b -> b.getOwner().equals(playerName)).collect(Collectors.toList());
+        List<Road> all = new ArrayList<>();
+        for (Building building: playersBuildings) {
+            all.addAll(getRoadsForBuilding(building));
+        }
+        return all;
     }
 
-     */
+    public List<Road> getRoadsForBuilding(Building b){
+        return roads.stream().filter(r -> (r.getBuilding1().equals(b) || r.getBuilding2().equals(b)) && r.getStatus() == Status.FREE).collect(Collectors.toList());
+    }
+
+    public Road addRoad(RoadDto road){
+        for (Road r: roads) {
+            if(r.getRow1() == road.getRow1() && r.getRow2() == road.getRow2() && r.getCol1() == road.getCol1() && r.getCol2() == road.getCol2() && r.getStatus() == Status.FREE){
+                r.setOwner(road.getPlayer());
+                r.setStatus(Status.TAKEN);
+                return r;
+            }
+        }
+        return null;
+    }
+
+    public Building addBuilding(BuildingDto building){
+        //SET ONE TO TAKEN AND ALL WITH DISTANCE = 1 TO BLOCKED(2 or 3)
+        for (Building b: buildings){
+            if(b.getRow() == building.getRow() && b.getColumn() == building.getCol()){
+                b.setStatus(Status.TAKEN);
+                b.setOwner(building.getPlayerName());
+                b.setType(building.getType());
+                findNearbyBuildings(b);
+            }
+        }
+        return null;
+    }
+
+    private void findNearbyBuildings(Building b){
+        List<Road> exitRoads = roads.stream().filter
+                (r -> (r.getRow1() == b.getRow() && r.getCol1() == b.getColumn()) || (r.getRow2() == b.getRow() && r.getCol2() == b.getColumn()))
+                .collect(Collectors.toList());
+        for(Road r: exitRoads){
+            int row;
+            int col;
+            if(r.getRow1() == b.getRow() && r.getCol1() == b.getColumn()){
+                row = r.getRow2();
+                col = r.getCol2();
+            }
+            else{
+                row = r.getRow1();
+                col = r.getCol1();
+            }
+            findBuildingForCoordinates(row, col);
+        }
+    }
+
+    private void findBuildingForCoordinates(int row, int col){
+        for(Building b: buildings){
+            if(b.getRow() == row && b.getColumn() == col)
+                b.setStatus(Status.BLOCKED);
+        }
+    }
 
     @Override
     public String toString() {

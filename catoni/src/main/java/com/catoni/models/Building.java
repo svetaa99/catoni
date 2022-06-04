@@ -1,10 +1,11 @@
 package com.catoni.models;
-// int row;
-// int column;
-// isHarbour;
 
 import com.catoni.models.enums.BuildingTypes;
+import com.catoni.models.enums.ResourceTypes;
 import com.catoni.models.enums.Status;
+
+import java.util.Map;
+import java.util.Objects;
 
 public class Building {
     private int row;
@@ -19,6 +20,8 @@ public class Building {
 
     private Status status;
 
+    private Map<ResourceTypes, Double> resourceChances;
+
     public Building() {}
 
     public Building(int row, int column, boolean isHarbor, String owner, BuildingTypes type, Status status) {
@@ -28,6 +31,16 @@ public class Building {
         this.owner = owner;
         this.type = type;
         this.status = status;
+    }
+
+    public Building(int row, int column, boolean isHarbor, String owner, BuildingTypes type, Status status, Map<ResourceTypes, Double> resourceChances) {
+        this.row = row;
+        this.column = column;
+        this.isHarbor = isHarbor;
+        this.owner = owner;
+        this.type = type;
+        this.status = status;
+        this.resourceChances = resourceChances;
     }
 
     @Override
@@ -40,6 +53,27 @@ public class Building {
                 ", type=" + type +
                 ", status=" + status +
                 '}' + '\n';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Building building = (Building) o;
+        return row == building.row && column == building.column;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, column);
+    }
+
+    public Map<ResourceTypes, Double> getResourceChances() {
+        return resourceChances;
+    }
+
+    public void setResourceChances(Map<ResourceTypes, Double> resourceChances) {
+        this.resourceChances = resourceChances;
     }
 
     public int getRow() {
