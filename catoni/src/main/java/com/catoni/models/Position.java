@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class Position {
@@ -105,6 +106,23 @@ public class Position {
     }
 
      */
+
+    public List<Building> getAvailableBuildings(){
+        return buildings.stream().filter(b -> b.getStatus() == Status.FREE).collect(Collectors.toList());
+    }
+
+    public List<Road> getAvailableRoadsForPlayer(String playerName){ // u pravilima uvek bot pisemo?
+        List<Building> playersBuildings = buildings.stream().filter(b -> b.getOwner().equals(playerName)).collect(Collectors.toList());
+        List<Road> all = new ArrayList<>();
+        for (Building building: playersBuildings) {
+            all.addAll(getRoadsForBuilding(building));
+        }
+        return all;
+    }
+
+    public List<Road> getRoadsForBuilding(Building b){
+        return roads.stream().filter(r -> (r.getBuilding1().equals(b) || r.getBuilding2().equals(b)) && r.getStatus() == Status.FREE).collect(Collectors.toList());
+    }
 
     @Override
     public String toString() {

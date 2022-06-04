@@ -1,5 +1,4 @@
 package com.catoni.models;
-
 import com.catoni.models.enums.Status;
 
 // class Road
