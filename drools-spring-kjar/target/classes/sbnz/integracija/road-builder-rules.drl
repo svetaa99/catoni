@@ -1,0 +1,53 @@
+package com.catoni;
+
+import com.catoni.models.enums.*;
+import com.catoni.models.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.HashMap;
+import java.util.Map;
+
+rule "Play ROAD_BUILDING to build two roads"
+    when
+        $is: InputState(
+          playerStates.get("bot").getCraziesList().contains(CrazyTypes.ROAD_BUILDING)
+        )
+        $gs: GlobalState(
+          longestRoad.keySet().toArray()[0] < $is.getPlayerStates().get("bot").getNumberOfRoads() + 2
+        )
+        $m: Move()
+
+    then
+        System.out.println("Current global state: " + $gs.longestRoad);
+        System.out.println("Current bot's roads: " + $is.getPlayerStates().get("bot").getNumberOfRoads());
+        State myPlayerState = $is.getPlayerStates().get("bot");
+        myPlayerState.setCraziesList(new ArrayList<>());
+        Map<String, State> newState = new HashMap<>();
+        newState.put("bot", myPlayerState);
+        
+        modify($is) {setPlayerStates(newState)};
+        $m.setMove(MoveTypes.PLAY_ROAD_BUILDING);
+        update($m);
+end
+
+rule "Play ROAD_BUILDING to build two roads"
+    when
+        $is: InputState(
+          playerStates.get("bot").getCraziesList().contains(CrazyTypes.ROAD_BUILDING) &&
+          (resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY) && resources.contains(ResourceTypes.GRAIN) && resources.contains(ResourceTypes.SHEEP))
+        )
+        $m: Move()
+
+    then
+        State myPlayerState = $is.getPlayerStates().get("bot");
+        myPlayerState.setCraziesList(new ArrayList<>());
+        Map<String, State> newState = new HashMap<>();
+        newState.put("bot", myPlayerState);
+        
+        modify($is) {setPlayerStates(newState)};
+        $m.setMove(MoveTypes.PLAY_ROAD_BUILDING);
+        update($m);
+end
