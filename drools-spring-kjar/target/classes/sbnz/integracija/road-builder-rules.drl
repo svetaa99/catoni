@@ -21,7 +21,8 @@ rule "Play ROAD_BUILDING to build two roads"
         $m: Move()
 
     then
-        System.out.println("Current global state: " + $gs.longestRoad);
+        int currentLongestRoad = (int) $gs.longestRoad.keySet().toArray()[0];
+        System.out.println("Current global state: " + currentLongestRoad);
         System.out.println("Current bot's roads: " + $is.getPlayerStates().get("bot").getNumberOfRoads());
         State myPlayerState = $is.getPlayerStates().get("bot");
         myPlayerState.setCraziesList(new ArrayList<>());
@@ -30,10 +31,14 @@ rule "Play ROAD_BUILDING to build two roads"
         
         modify($is) {setPlayerStates(newState)};
         $m.setMove(MoveTypes.PLAY_ROAD_BUILDING);
+        $gs.longestRoad.remove(currentLongestRoad);
+        $gs.longestRoad.put($is.getPlayerStates().get("bot").getNumberOfRoads() + 2, "bot");
+        update($gs);
+        System.out.println("New global state longest road: " + $gs.longestRoad);
         update($m);
 end
 
-rule "Play ROAD_BUILDING to build two roads"
+rule "Play ROAD_BUILDING to build a house"
     when
         $is: InputState(
           playerStates.get("bot").getCraziesList().contains(CrazyTypes.ROAD_BUILDING) &&
