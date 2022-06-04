@@ -17,6 +17,7 @@ rule "Build House"
             )
         $m: Move()
     then
+        System.out.println("Building house!");
         $m.setMove(MoveTypes.BUILD_HOUSE);
         update($m);
 end
@@ -24,11 +25,11 @@ end
 rule "Build Hotel"
     salience 2
     when
-
         $is: InputState( Collections.frequency(resources, ResourceTypes.ROCK) == 3 && Collections.frequency(resources, ResourceTypes.GRAIN) == 2 )
-        $m: Move()
+        $m: Move( move == MoveTypes.MONOPOLY_GRAIN)
 
     then
+        System.out.println("Building hotel!");
         $m.setMove(MoveTypes.BUILD_HOTEL);
         update($m);
 end

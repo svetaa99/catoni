@@ -14,8 +14,6 @@ import java.util.Map;
 rule "Play YEAR_OF_PLENTY to build a house"
     salience 5
     when
-
-
         $is: InputState(
             playerStates.get("bot").getCraziesList().contains(CrazyTypes.YEAR_OF_PLENTY) && (
             (resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)) ||
@@ -36,16 +34,10 @@ end
 rule "Draw resources for a house after playing YEAR_OF_PLENTY"
     salience 6
     when
-
         $is: InputState()
         $m: Move( move == MoveTypes.PLAY_YEAR_OF_PLENTY )
 
     then
-        boolean hasWood = false;
-        boolean hasClay = false;
-        boolean hasGrain = false;
-        boolean hasSheep = false;
-
         List<ResourceTypes> available = $m.getObjects();
 
         System.out.println("Resources before checking what card to draw: " + available);
