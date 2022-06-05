@@ -29,7 +29,6 @@ public class PositionService {
         kieSession.insert(bDto);
         kieSession.insert(rDto);
         kieSession.fireAllRules();
-        kieSession.dispose();
         dto.setBuilding(bDto);
         dto.setRoad(rDto);
         return dto;

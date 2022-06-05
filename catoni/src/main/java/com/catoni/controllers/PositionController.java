@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("position")
@@ -37,8 +38,11 @@ public class PositionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value="starting-house", produces = "application/json", consumes="application/json")
-    public ResponseEntity<StartSelectionDto> getStartingHouse(@RequestBody InputState state){
+    @GetMapping(value="starting-house", produces = "application/json")
+    public ResponseEntity<StartSelectionDto> getStartingHouse(){
+        System.out.println("PRE");
+
+        System.out.println(position);
         StartSelectionDto dto = service.getHouseAndRoadPosition(position);
         position.addBuilding(dto.getBuilding());
         position.addRoad(dto.getRoad());
@@ -52,5 +56,13 @@ public class PositionController {
         position.initChances(chances);
         System.out.println(position);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //TESTING METHOD
+    @GetMapping(value = "available-player-building-spots", produces = "application/json")
+    public ResponseEntity<List<Building>> avaiableForPlayer(){
+        List<Building> retVal = position.getAvailableBuildingSpotsForPlayer("bot");
+
+        return new ResponseEntity<>(retVal, HttpStatus.OK);
     }
 }

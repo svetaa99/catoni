@@ -13,7 +13,7 @@ public class GlobalState {
     // Map<numberOfLongestRoads, PlayerName>
     public Map<Integer, String> longestRoad;
     // Map<numberOfMostUsedKnights, PlayerName>
-    public Map<Integer, String> mostKnights;
+    public Map<Integer, String> mostKnights; //ZAR NE TREBA OBRNUTO
     public String playerOnTurn;
 
     private GlobalState()
