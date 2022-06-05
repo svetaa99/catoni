@@ -15,7 +15,7 @@ public class InputState {
     private Map<String, State> playerStates;
 
     @Autowired
-    private Position position = new Position();
+    private Position position = Position.getInstance();
 
     private boolean isMyTurn;
 

@@ -14,9 +14,19 @@ import java.util.stream.Collectors;
 @Component
 public class Position {
 
+    private static Position instance = null;
+
     private List<Building> buildings;
 
     private List<Road> roads;
+
+    public static Position getInstance()
+    {
+        if (instance == null)
+            instance = new Position();
+
+        return instance;
+    }
 
     public Position() {
         this.buildings = new ArrayList<>();
@@ -223,6 +233,14 @@ public class Position {
             for(int i = 0; i < chances.getBuilding().size(); i++){
                 if(b.equalsDto(chances.getBuilding().get(i))){
                     b.setChanceList(chances.getChances().get(i));
+                    for(Road r: roads){
+                        if(r.getBuilding1().equals(b)){
+                            r.getBuilding1().setChanceList(chances.getChances().get(i));
+                        }
+                        else if(r.getBuilding2().equals(b)){
+                            r.getBuilding2().setChanceList(chances.getChances().get(i));
+                        }
+                    }
                 }
             }
         }

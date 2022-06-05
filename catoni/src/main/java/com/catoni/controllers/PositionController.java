@@ -22,7 +22,7 @@ public class PositionController {
     @Autowired
     private PositionService service;
 
-    private Position position = new Position();
+    private Position position = Position.getInstance();
 
     @PostMapping(value="road", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Road> addRoad(@RequestBody RoadDto road){

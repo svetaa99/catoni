@@ -12,9 +12,17 @@ public class Move {
     public List<MoveTypes> moveList;
     public List<ResourceTypes> objects = new ArrayList<>();
 
+    public List<Building> buildings = new ArrayList<>();
+
+    public List<Road> roads = new ArrayList<>();
+
     public Move() {
         this.moveList = new ArrayList<>();
         moveList.add(MoveTypes.START_TURN);
+    }
+
+    public void addBuilding(Building b) {
+        this.buildings.add(b);
     }
 
     public Move(List<ResourceTypes> objects) {
@@ -32,4 +40,6 @@ public class Move {
     public void setObjects(List<ResourceTypes> objects) {
         this.objects = objects;
     }
+
+
 }

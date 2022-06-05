@@ -68,6 +68,7 @@ public class Building {
     @JsonIgnore
     public double getSumOfChances(){
         double sum = 0;
+        System.out.println(chanceList);
         for (ResourceChance rc: chanceList) {
             sum += rc.getChance();
         }

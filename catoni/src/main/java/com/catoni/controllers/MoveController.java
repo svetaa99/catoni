@@ -3,6 +3,7 @@ package com.catoni.controllers;
 import com.catoni.models.InputState;
 import com.catoni.models.Item;
 import com.catoni.models.Move;
+import com.catoni.models.Position;
 import com.catoni.services.MoveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

@@ -15,7 +15,7 @@ rule "Build House"
             resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)
             && resources.contains(ResourceTypes.SHEEP) && resources.contains(ResourceTypes.GRAIN)
             )
-        $m: Move()
+        $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE) )
     then
         System.out.println("Building house!");
         $m.addMove(MoveTypes.BUILD_HOUSE);
