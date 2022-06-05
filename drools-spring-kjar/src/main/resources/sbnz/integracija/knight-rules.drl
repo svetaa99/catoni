@@ -12,7 +12,7 @@ import java.util.Map;
 
 rule "Play KNIGHT to get most knights played points"
     no-loop
-    salience 6
+    salience 7
     when
         $is: InputState(
           playerStates.get("bot").getCraziesList().contains(CrazyTypes.KNIGHT)
@@ -70,7 +70,7 @@ rule "Play KNIGHT to steal a needed card"
 
     System.out.println("Player points: " + playersAndPoints);
     String maxName = playersAndPoints.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
-    System.out.println("MOST POINTS PLAYER: " + maxName + " -> Stealing card from player1");
+    System.out.println("MOST POINTS PLAYER: " + maxName + " -> Stealing card from " + maxName);
 
     switch(maxName) {
       case "player1":
