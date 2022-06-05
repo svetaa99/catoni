@@ -2,6 +2,8 @@ package com.catoni.services;
 
 import com.catoni.models.Position;
 import com.catoni.models.dto.BuildingDto;
+import com.catoni.models.dto.RoadDto;
+import com.catoni.models.dto.StartSelectionDto;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +20,18 @@ public class PositionService {
         this.kieContainer = kieContainer;
     }
 
-    public BuildingDto getHousePosition(Position position){
-        System.out.println("POZICIJA");
-        System.out.println(position);
-        BuildingDto dto = new BuildingDto();
+    public StartSelectionDto getHouseAndRoadPosition(Position position){
+        StartSelectionDto dto = new StartSelectionDto();
+        BuildingDto bDto = new BuildingDto();
+        RoadDto rDto = new RoadDto();
         KieSession kieSession = kieContainer.newKieSession();
         kieSession.insert(position);
-        kieSession.insert(dto);
+        kieSession.insert(bDto);
+        kieSession.insert(rDto);
         kieSession.fireAllRules();
         kieSession.dispose();
+        dto.setBuilding(bDto);
+        dto.setRoad(rDto);
         return dto;
     }
 }

@@ -7,6 +7,7 @@ import com.catoni.models.Road;
 import com.catoni.models.dto.BuildingDto;
 import com.catoni.models.dto.ChanceInitDto;
 import com.catoni.models.dto.RoadDto;
+import com.catoni.models.dto.StartSelectionDto;
 import com.catoni.services.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,9 +38,12 @@ public class PositionController {
     }
 
     @GetMapping(value="starting-house", produces = "application/json", consumes="application/json")
-    public ResponseEntity<BuildingDto> getStartingHouse(@RequestBody InputState state){
-        BuildingDto dto = service.getHousePosition(position);
+    public ResponseEntity<StartSelectionDto> getStartingHouse(@RequestBody InputState state){
+        StartSelectionDto dto = service.getHouseAndRoadPosition(position);
+        position.addBuilding(dto.getBuilding());
+        position.addRoad(dto.getRoad());
         System.out.println("GOTOVO");
+        System.out.println(position);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 

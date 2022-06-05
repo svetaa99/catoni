@@ -53,7 +53,12 @@ public class Position {
                     if (col % 2 == 0) {
                         int colIndex = col == maxColForRow(row) && row == 2 ? col : col + 1;
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+
                         Road roadDown = new Road(row, col, row + 1, colIndex, null, Status.FREE);
+                        roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
+                        roadDown.setBuilding2(new Building(row, colIndex, calculateHarbor(row + 1, colIndex), null, BuildingTypes.NONE, Status.FREE));
 
                         if (col != maxColForRow(row)){
                             roads.add(roadRight);
@@ -61,18 +66,29 @@ public class Position {
                         roads.add(roadDown);
                     } else {
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+
                         roads.add(roadRight);
                     }
                 } else {
                     if (col % 2 != 0) {
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+
                         Road roadDown = new Road(row, col, row + 1, col - 1, null, Status.FREE);
+                        roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
+                        roadDown.setBuilding2(new Building(row, col + 1, calculateHarbor(row + 1, col + 1), null, BuildingTypes.NONE, Status.FREE));
 
                         roads.add(roadRight);
                         if(row != 5)
                             roads.add(roadDown);
                     } else {
                         Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+
                         if(col != maxColForRow(row))
                             roads.add(roadRight);
                     }
@@ -173,6 +189,29 @@ public class Position {
                 }
             }
         }
+    }
+
+    public Road getRoadTowardsBuilding(Building start, Building end){
+        List<Building> connections = new ArrayList<>();
+        for (Road r : roads){
+            if(r.getBuilding1().equals(end))
+                connections.add(r.getBuilding2());
+            else if(r.getBuilding2().equals(end))
+                connections.add(r.getBuilding1());
+        }
+        for (Road r: roads) {
+            if(connections.contains(r.getBuilding1())){
+                if(start.equals(r.getBuilding2()))
+                    return r;
+            }
+            else if(connections.contains(r.getBuilding2())){
+                if (start.equals(r.getBuilding1()))
+                    return r;
+            }
+        }
+        //od svih koje sadrze END vrati kucu sa kojom ih spajaju
+        //proveri da li postoji put koji spaja vracenu kucu sa pocetnom i vrati ga
+        return null;
     }
 
     @Override

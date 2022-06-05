@@ -11,7 +11,7 @@ import com.catoni.models.dto.*;
 import java.lang.Number;
 
 
-rule "Build House Start"
+rule "Build House and Road Start"
     salience 1
     when
        $p: Position()
@@ -23,11 +23,33 @@ rule "Build House Start"
 
        $b: Building(getSumOfChances() == $val) from $p.buildings
 
-       $dto: BuildingDto()
+       Number($eval: doubleValue) from accumulate(
+            Building($t: this, status == Status.FREE,
+                (row == $b.row && column == $b.column + 2) ||
+                (row == $b.row && column == $b.column - 2) ||
+                (row == $b.row - 1 && column == $b.column - 2) ||
+                (row == $b.row - 1 && column == $b.column) ||
+                (row == $b.row + 1 && column == $b.column) ||
+                (row == $b.row + 1 && column == $b.column + 2)
+                ) from $p.buildings,
+            max($t.getSumOfChances())
+       )
+       $br: Building(getSumOfChances() == $eval) from $p.buildings
+
+       $r : Road() from $p.getRoadTowardsBuilding($b, $br)
+
+       $dtoB: BuildingDto()
+       $dtoR: RoadDto()
     then
-        $dto.setRow($b.getRow());
-        $dto.setCol($b.getColumn());
-        $dto.setPlayerName("bot");
-        $dto.setType(BuildingTypes.HOUSE);
-        update($dto);
+        $dtoB.setRow($b.getRow());
+        $dtoB.setCol($b.getColumn());
+        $dtoB.setPlayerName("bot");
+        $dtoB.setType(BuildingTypes.HOUSE);
+        update($dtoB);
+        $dtoR.setRow1($r.getRow1());
+        $dtoR.setCol1($r.getCol1());
+        $dtoR.setRow2($r.getRow2());
+        $dtoR.setCol2($r.getCol2());
+        $dtoR.setPlayer("bot");
+        update($dtoR);
 end
