@@ -20,6 +20,7 @@ public class GlobalState {
     {
         playerNames = new ArrayList<>();
         longestRoad = new HashMap<>();
+        longestRoad.put(5, "player1");
         mostKnights = new HashMap<>();
         playerOnTurn = "";
     }

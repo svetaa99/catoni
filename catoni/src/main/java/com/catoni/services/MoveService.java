@@ -1,5 +1,6 @@
 package com.catoni.services;
 
+import com.catoni.models.GlobalState;
 import com.catoni.models.InputState;
 import com.catoni.models.Item;
 import com.catoni.models.Move;
@@ -24,6 +25,7 @@ public class MoveService {
         KieSession kieSession = kieContainer.newKieSession();
         kieSession.insert(inputState);
         kieSession.insert(move);
+        kieSession.insert(GlobalState.getInstance());
         kieSession.fireAllRules();
         kieSession.dispose();
         return move;
