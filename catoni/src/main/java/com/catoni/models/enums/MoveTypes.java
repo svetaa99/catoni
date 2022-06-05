@@ -1,7 +1,14 @@
 package com.catoni.models.enums;
 
 public enum MoveTypes {
+    START_TURN,
     END_TURN,
+
+    DRAW_WOOD,
+    DRAW_CLAY,
+    DRAW_GRAIN,
+    DRAW_SHEEP,
+    DRAW_ROCK,
 
     BUILD_HOUSE,
     BUILD_HOTEL,
