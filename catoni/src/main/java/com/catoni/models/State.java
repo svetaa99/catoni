@@ -27,9 +27,9 @@ public class State {
         this.resourceChances = resourceChances;
     }
 
-    public int getTotalGamePoints() {
+    public int getTotalGamePoints(String name) {
         return numberOfHouses + numberOfHotels * 2 + calculateVictoryPoints() +
-                calculateKnightsBonus() + calculateRoadsBonus();
+                calculateKnightsBonus(name) + calculateRoadsBonus(name);
     }
 
     private int calculateVictoryPoints() {
@@ -42,19 +42,21 @@ public class State {
         return victoryPoints;
     }
 
-    private int calculateKnightsBonus() {
+    private int calculateKnightsBonus(String name) {
         int knightsBonus = 0;
-        boolean hasMostKnights = GlobalState.getInstance().mostKnights.containsValue(BotConstants.BOT_NAME);
+        boolean hasMostKnights = GlobalState.getInstance().mostKnights.containsValue(name);
         if (hasMostKnights) {
+            System.out.println("HAS MOST KNIGHTS BONUS");
             knightsBonus = 2;
         }
         return knightsBonus;
     }
 
-    private int calculateRoadsBonus() {
+    private int calculateRoadsBonus(String name) {
         int roadsBonus = 0;
-        boolean hasLongestRoad = GlobalState.getInstance().longestRoad.containsValue(BotConstants.BOT_NAME);
+        boolean hasLongestRoad = GlobalState.getInstance().longestRoad.containsValue(name);
         if (hasLongestRoad) {
+            System.out.println("HAS MOST ROADS BONUS");
             roadsBonus = 2;
         }
         return roadsBonus;
