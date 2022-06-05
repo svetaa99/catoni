@@ -28,7 +28,7 @@ public class Position {
                     if (col > 6) {
                         continue;
                     }
-                    Building building = new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE);
+                    Building building = new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE);
                     buildings.add(building);
                 }
 
@@ -36,12 +36,12 @@ public class Position {
                     if (col > 8) {
                         continue;
                     }
-                    Building building = new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE);
+                    Building building = new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE);
                     buildings.add(building);
                 }
 
                 else {
-                    Building building = new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE);
+                    Building building = new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE);
                     buildings.add(building);
                 }
             }
@@ -52,42 +52,42 @@ public class Position {
                 if (row < 3) {
                     if (col % 2 == 0) {
                         int colIndex = col == maxColForRow(row) && row == 2 ? col : col + 1;
-                        Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
-                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
-                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+                        Road roadRight = new Road(row, col, row, col + 1, "null", Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), "null", BuildingTypes.NONE, Status.FREE));
 
-                        Road roadDown = new Road(row, col, row + 1, colIndex, null, Status.FREE);
-                        roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
-                        roadDown.setBuilding2(new Building(row, colIndex, calculateHarbor(row + 1, colIndex), null, BuildingTypes.NONE, Status.FREE));
+                        Road roadDown = new Road(row, col, row + 1, colIndex, "null", Status.FREE);
+                        roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
+                        roadDown.setBuilding2(new Building(row, colIndex, calculateHarbor(row + 1, colIndex), "null", BuildingTypes.NONE, Status.FREE));
 
                         if (col != maxColForRow(row)){
                             roads.add(roadRight);
                         }
                         roads.add(roadDown);
                     } else {
-                        Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
-                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
-                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+                        Road roadRight = new Road(row, col, row, col + 1, "null", Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), "null", BuildingTypes.NONE, Status.FREE));
 
                         roads.add(roadRight);
                     }
                 } else {
                     if (col % 2 != 0) {
-                        Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
-                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
-                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+                        Road roadRight = new Road(row, col, row, col + 1, "null", Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), "null", BuildingTypes.NONE, Status.FREE));
 
-                        Road roadDown = new Road(row, col, row + 1, col - 1, null, Status.FREE);
-                        roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
-                        roadDown.setBuilding2(new Building(row, col + 1, calculateHarbor(row + 1, col + 1), null, BuildingTypes.NONE, Status.FREE));
+                        Road roadDown = new Road(row, col, row + 1, col - 1, "null", Status.FREE);
+                        roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
+                        roadDown.setBuilding2(new Building(row, col + 1, calculateHarbor(row + 1, col + 1), "null", BuildingTypes.NONE, Status.FREE));
 
                         roads.add(roadRight);
                         if(row != 5)
                             roads.add(roadDown);
                     } else {
-                        Road roadRight = new Road(row, col, row, col + 1, null, Status.FREE);
-                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), null, BuildingTypes.NONE, Status.FREE));
-                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), null, BuildingTypes.NONE, Status.FREE));
+                        Road roadRight = new Road(row, col, row, col + 1, "null", Status.FREE);
+                        roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
+                        roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), "null", BuildingTypes.NONE, Status.FREE));
 
                         if(col != maxColForRow(row))
                             roads.add(roadRight);
@@ -118,13 +118,25 @@ public class Position {
         return buildings.stream().filter(b -> b.getStatus() == Status.FREE).collect(Collectors.toList());
     }
 
-    public List<Road> getAvailableRoadsForPlayer(String playerName){ // u pravilima uvek bot pisemo?
+    public List<Road> getAvailableRoadsForPlayer(String playerName){
         List<Building> playersBuildings = buildings.stream().filter(b -> b.getOwner().equals(playerName)).collect(Collectors.toList());
         List<Road> all = new ArrayList<>();
         for (Building building: playersBuildings) {
             all.addAll(getRoadsForBuilding(building));
         }
         return all;
+    }
+
+    public List<Building> getAvailableBuildingSpotsForPlayer(String playerName){
+        List<Building> retVal = new ArrayList<>();
+        List<Road> roadsForPlayer = roads.stream().filter(r -> r.getOwner().equals(playerName)).collect(Collectors.toList());
+        for(Road r: roadsForPlayer){
+            if(r.getBuilding1().getStatus() == Status.FREE)
+                retVal.add(r.getBuilding1());
+            else if(r.getBuilding2().getStatus() == Status.FREE)
+                retVal.add(r.getBuilding2());
+        }
+        return retVal;
     }
 
     public List<Road> getRoadsForBuilding(Building b){
@@ -145,7 +157,19 @@ public class Position {
     public Building addBuilding(BuildingDto building){
         //SET ONE TO TAKEN AND ALL WITH DISTANCE = 1 TO BLOCKED(2 or 3)
         for (Building b: buildings){
-            if(b.getRow() == building.getRow() && b.getColumn() == building.getCol()){
+            if(b.equalsDto(building)){
+                for(Road r: roads){
+                    if(r.getBuilding1().equals(b)) {
+                        Building bld = r.getBuilding1();
+                        bld.setStatus(Status.TAKEN);
+                        r.setBuilding1(bld);
+                    }
+                    else if(r.getBuilding2().equals(b)){
+                        Building bld = r.getBuilding2();
+                        bld.setStatus(Status.TAKEN);
+                        r.setBuilding2(bld);
+                    }
+                }
                 b.setStatus(Status.TAKEN);
                 b.setOwner(building.getPlayerName());
                 b.setType(building.getType());
@@ -176,8 +200,21 @@ public class Position {
 
     private void findBuildingForCoordinates(int row, int col){
         for(Building b: buildings){
-            if(b.getRow() == row && b.getColumn() == col)
+            if(b.getRow() == row && b.getColumn() == col){
                 b.setStatus(Status.BLOCKED);
+                for(Road r: roads){
+                    if(r.getBuilding1().equals(b)){
+                        Building bld = r.getBuilding1();
+                        bld.setStatus(Status.BLOCKED);
+                        r.setBuilding1(bld);
+                    }
+                    else if(r.getBuilding2().equals(b)){
+                        Building bld = r.getBuilding2();
+                        bld.setStatus(Status.BLOCKED);
+                        r.setBuilding2(bld);
+                    }
+                }
+            }
         }
     }
 
@@ -209,8 +246,6 @@ public class Position {
                     return r;
             }
         }
-        //od svih koje sadrze END vrati kucu sa kojom ih spajaju
-        //proveri da li postoji put koji spaja vracenu kucu sa pocetnom i vrati ga
         return null;
     }
 

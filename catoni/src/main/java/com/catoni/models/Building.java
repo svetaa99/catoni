@@ -4,6 +4,7 @@ import com.catoni.models.dto.BuildingDto;
 import com.catoni.models.enums.BuildingTypes;
 import com.catoni.models.enums.ResourceTypes;
 import com.catoni.models.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 import java.util.Objects;
@@ -64,6 +65,7 @@ public class Building {
         return Objects.hash(row, column);
     }
 
+    @JsonIgnore
     public double getSumOfChances(){
         double sum = 0;
         for (ResourceChance rc: chanceList) {
