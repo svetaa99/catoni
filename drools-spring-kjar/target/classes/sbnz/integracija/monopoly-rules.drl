@@ -75,12 +75,15 @@ rule "Take resources after playing MONOPOLY to build a building"
         }
 
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.MONOPOLY);
+        myPlayerState.setCraziesList(newCraziesList);
         Map<String, State> newState = new HashMap<>();
         newState.put("bot", myPlayerState);
         modify($is) {setResources(available), setPlayerStates(newState)};
         System.out.println("Available resources after playing MONOPOLY and drawing cards: " + $is.getResources());
-        modify($m) {addMove(MoveTypes.END_TURN)};
+
+        System.out.println("Crazies list after playing MONOPOLY: " + $is.getPlayerStates().get("bot").getCraziesList());
 end
 
 

@@ -106,9 +106,13 @@ rule "Draw resources for a house after playing YEAR_OF_PLENTY"
 
         System.out.println("Available resources after playing crazy and drawing cards: " + available);
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.YEAR_OF_PLENTY);
+        myPlayerState.setCraziesList(newCraziesList);
         Map<String, State> newState = new HashMap<>();
         newState.put("bot", myPlayerState);
+        System.out.println("Crazies list after playing YEAR_OF_PLENTY: " + $is.getPlayerStates().get("bot").getCraziesList());
+
         modify($is) {setResources(available), setPlayerStates(newState)};
         update($m);
 end

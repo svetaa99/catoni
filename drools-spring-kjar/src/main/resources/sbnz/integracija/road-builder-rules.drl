@@ -28,7 +28,9 @@ rule "Play ROAD_BUILDING to build two roads"
         System.out.println("Current bot's roads: " + $is.getPlayerStates().get("bot").getNumberOfRoads());
 
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.MONOPOLY);
+        myPlayerState.setCraziesList(newCraziesList);
         Map<String, State> newState = new HashMap<>();
         newState.put("bot", myPlayerState);
         
@@ -53,10 +55,13 @@ rule "Play ROAD_BUILDING to build a house"
 
     then
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.ROAD_BUILDING);
+        myPlayerState.setCraziesList(newCraziesList);
         Map<String, State> newState = new HashMap<>();
         newState.put("bot", myPlayerState);
-        
+        System.out.println("Crazies list after playing ROAD_BUILDER: " + $is.getPlayerStates().get("bot").getCraziesList());
+
         modify($is) {setPlayerStates(newState)};
         $m.addMove(MoveTypes.PLAY_ROAD_BUILDING);
         update($m);
