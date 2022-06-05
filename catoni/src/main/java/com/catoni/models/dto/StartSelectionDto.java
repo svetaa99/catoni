@@ -19,4 +19,12 @@ public class StartSelectionDto {
     public void setRoad(RoadDto road) {
         this.road = road;
     }
+
+    @Override
+    public String toString() {
+        return "StartSelectionDto{" +
+                "building=" + building +
+                ", road=" + road +
+                '}';
+    }
 }

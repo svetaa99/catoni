@@ -39,4 +39,14 @@ public class BuildingDto {
     public void setType(BuildingTypes type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "BuildingDto{" +
+                "row=" + row +
+                ", col=" + col +
+                ", playerName='" + playerName + '\'' +
+                ", type=" + type +
+                '}';
+    }
 }

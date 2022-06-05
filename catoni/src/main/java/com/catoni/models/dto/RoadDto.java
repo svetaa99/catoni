@@ -46,4 +46,15 @@ public class RoadDto {
     public void setCol2(int col2) {
         this.col2 = col2;
     }
+
+    @Override
+    public String toString() {
+        return "RoadDto{" +
+                "row1=" + row1 +
+                ", col1=" + col1 +
+                ", row2=" + row2 +
+                ", col2=" + col2 +
+                ", player='" + player + '\'' +
+                '}';
+    }
 }

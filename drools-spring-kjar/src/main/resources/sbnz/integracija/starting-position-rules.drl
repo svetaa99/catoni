@@ -12,16 +12,21 @@ import java.lang.Number;
 
 
 rule "Build House and Road Start"
-    salience 1
+    no-loop
     when
        $p: Position()
+
+       accumulate(
+            Building($t: this, status == Status.FREE) from $p.buildings,
+            $free: collectList($t)
+       )
 
        Number($val: doubleValue) from accumulate(
             Building($t: this, status == Status.FREE) from $p.buildings,
             max($t.getSumOfChances())
        )
 
-       $b: Building(getSumOfChances() == $val) from $p.buildings
+       $b: Building(status == Status.FREE && getSumOfChances() == $val) from $p.buildings
 
        Number($eval: doubleValue) from accumulate(
             Building($t: this, status == Status.FREE,
@@ -41,6 +46,7 @@ rule "Build House and Road Start"
        $dtoB: BuildingDto()
        $dtoR: RoadDto()
     then
+        System.out.println($free);
         $dtoB.setRow($b.getRow());
         $dtoB.setCol($b.getColumn());
         $dtoB.setPlayerName("bot");
@@ -52,4 +58,6 @@ rule "Build House and Road Start"
         $dtoR.setCol2($r.getCol2());
         $dtoR.setPlayer("bot");
         update($dtoR);
+        $p.addBuilding($dtoB);
+        update($p);
 end
