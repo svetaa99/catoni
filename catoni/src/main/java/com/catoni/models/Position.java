@@ -1,6 +1,7 @@
 package com.catoni.models;
 
 import com.catoni.models.dto.BuildingDto;
+import com.catoni.models.dto.ChanceInitDto;
 import com.catoni.models.dto.RoadDto;
 import com.catoni.models.enums.BuildingTypes;
 import com.catoni.models.enums.Status;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class Position {
+
     private List<Building> buildings;
 
     private List<Road> roads;
@@ -160,6 +162,16 @@ public class Position {
         for(Building b: buildings){
             if(b.getRow() == row && b.getColumn() == col)
                 b.setStatus(Status.BLOCKED);
+        }
+    }
+
+    public void initChances(ChanceInitDto chances){
+        for (Building b: buildings) {
+            for(int i = 0; i < chances.getBuilding().size(); i++){
+                if(b.equalsDto(chances.getBuilding().get(i))){
+                    b.setChanceList(chances.getChances().get(i));
+                }
+            }
         }
     }
 

@@ -1,0 +1,33 @@
+package com.catoni;
+
+import java.util.Collections;
+
+import com.catoni.models.enums.MoveTypes;
+import com.catoni.models.enums.ResourceTypes;
+import com.catoni.models.enums.BuildingTypes;
+import com.catoni.models.enums.Status;
+import com.catoni.models.*;
+import com.catoni.models.dto.*;
+import java.lang.Number;
+
+
+rule "Build House Start"
+    salience 1
+    when
+       $p: Position()
+
+       Number($val: doubleValue) from accumulate(
+            Building($t: this, status == Status.FREE) from $p.buildings,
+            max($t.getSumOfChances())
+       )
+
+       $b: Building(getSumOfChances() == $val) from $p.buildings
+
+       $dto: BuildingDto()
+    then
+        $dto.setRow($b.getRow());
+        $dto.setCol($b.getColumn());
+        $dto.setPlayerName("bot");
+        $dto.setType(BuildingTypes.HOUSE);
+        update($dto);
+end

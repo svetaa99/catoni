@@ -1,10 +1,11 @@
 package com.catoni.models;
 
+import com.catoni.models.dto.BuildingDto;
 import com.catoni.models.enums.BuildingTypes;
 import com.catoni.models.enums.ResourceTypes;
 import com.catoni.models.enums.Status;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 public class Building {
@@ -20,7 +21,7 @@ public class Building {
 
     private Status status;
 
-    private Map<ResourceTypes, Double> resourceChances;
+    private List<ResourceChance> chanceList;
 
     public Building() {}
 
@@ -33,16 +34,6 @@ public class Building {
         this.status = status;
     }
 
-    public Building(int row, int column, boolean isHarbor, String owner, BuildingTypes type, Status status, Map<ResourceTypes, Double> resourceChances) {
-        this.row = row;
-        this.column = column;
-        this.isHarbor = isHarbor;
-        this.owner = owner;
-        this.type = type;
-        this.status = status;
-        this.resourceChances = resourceChances;
-    }
-
     @Override
     public String toString() {
         return "Building{" +
@@ -52,6 +43,7 @@ public class Building {
                 ", owner='" + owner + '\'' +
                 ", type=" + type +
                 ", status=" + status +
+                ", chances= " + chanceList +
                 '}' + '\n';
     }
 
@@ -63,17 +55,21 @@ public class Building {
         return row == building.row && column == building.column;
     }
 
+    public boolean equalsDto(BuildingDto dto){
+        return dto.getRow() == this.row && dto.getCol() == this.column;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(row, column);
     }
 
-    public Map<ResourceTypes, Double> getResourceChances() {
-        return resourceChances;
-    }
-
-    public void setResourceChances(Map<ResourceTypes, Double> resourceChances) {
-        this.resourceChances = resourceChances;
+    public double getSumOfChances(){
+        double sum = 0;
+        for (ResourceChance rc: chanceList) {
+            sum += rc.getChance();
+        }
+        return sum;
     }
 
     public int getRow() {
@@ -122,5 +118,13 @@ public class Building {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public List<ResourceChance> getChanceList() {
+        return chanceList;
+    }
+
+    public void setChanceList(List<ResourceChance> chanceList) {
+        this.chanceList = chanceList;
     }
 }
