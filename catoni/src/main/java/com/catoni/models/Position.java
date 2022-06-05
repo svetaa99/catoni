@@ -223,6 +223,14 @@ public class Position {
             for(int i = 0; i < chances.getBuilding().size(); i++){
                 if(b.equalsDto(chances.getBuilding().get(i))){
                     b.setChanceList(chances.getChances().get(i));
+                    for(Road r: roads){
+                        if(r.getBuilding1().equals(b)){
+                            r.getBuilding1().setChanceList(chances.getChances().get(i));
+                        }
+                        else if(r.getBuilding2().equals(b)){
+                            r.getBuilding2().setChanceList(chances.getChances().get(i));
+                        }
+                    }
                 }
             }
         }

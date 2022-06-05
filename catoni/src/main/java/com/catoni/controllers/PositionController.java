@@ -40,14 +40,14 @@ public class PositionController {
 
     @GetMapping(value="starting-house", produces = "application/json")
     public ResponseEntity<StartSelectionDto> getStartingHouse(){
-        System.out.println("PRE");
-
-        System.out.println(position);
+//        System.out.println("PRE");
+//
+//        System.out.println(position);
         StartSelectionDto dto = service.getHouseAndRoadPosition(position);
         position.addBuilding(dto.getBuilding());
         position.addRoad(dto.getRoad());
-        System.out.println("GOTOVO");
-        System.out.println(position);
+//        System.out.println("GOTOVO");
+//        System.out.println(position);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
