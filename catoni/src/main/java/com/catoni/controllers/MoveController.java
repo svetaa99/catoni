@@ -21,7 +21,7 @@ public class MoveController {
 
         System.out.println("Current input state: " + inputState);
         Move move = moveService.getMove(inputState);
-        System.out.println("Move to play -> " + move.getMove());
+        System.out.println("Move to play -> " + move.moveList);
         return move;
     }
 

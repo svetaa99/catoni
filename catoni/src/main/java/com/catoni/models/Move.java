@@ -9,22 +9,20 @@ import java.util.List;
 
 public class Move {
 
-    private MoveTypes move = MoveTypes.END_TURN;
+    public List<MoveTypes> moveList;
     public List<ResourceTypes> objects = new ArrayList<>();
 
-    public Move() {}
+    public Move() {
+        this.moveList = new ArrayList<>();
+        moveList.add(MoveTypes.START_TURN);
+    }
 
-    public Move(MoveTypes move, List<ResourceTypes> objects) {
-        this.move = move;
+    public Move(List<ResourceTypes> objects) {
         this.objects = objects;
     }
 
-    public MoveTypes getMove() {
-        return move;
-    }
-
-    public void setMove(MoveTypes move) {
-        this.move = move;
+    public void addMove(MoveTypes move) {
+        this.moveList.add(move);
     }
 
     public List<ResourceTypes> getObjects() {

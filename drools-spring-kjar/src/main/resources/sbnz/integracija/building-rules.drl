@@ -8,9 +8,9 @@ import com.catoni.models.*;
 
 
 rule "Build House"
-    salience 1
+    salience 4
+    no-loop
     when
-
         $is: InputState(
             resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)
             && resources.contains(ResourceTypes.SHEEP) && resources.contains(ResourceTypes.GRAIN)
@@ -18,37 +18,72 @@ rule "Build House"
         $m: Move()
     then
         System.out.println("Building house!");
-        $m.setMove(MoveTypes.BUILD_HOUSE);
+        $m.addMove(MoveTypes.BUILD_HOUSE);
+
+        System.out.println("Removing resources from hand");
+        List<ResourceTypes> availableResources = $is.getResources();
+        availableResources.remove(ResourceTypes.WOOD);
+        availableResources.remove(ResourceTypes.CLAY);
+        availableResources.remove(ResourceTypes.GRAIN);
+        availableResources.remove(ResourceTypes.SHEEP);
+        System.out.println("Available resources after building house: " + availableResources);
+        $is.setResources(availableResources);
+
+        update($is);
         update($m);
 end
 
 rule "Build Hotel"
-    salience 2
+    salience 4
+    no-loop
     when
         $is: InputState( Collections.frequency(resources, ResourceTypes.ROCK) == 3 && Collections.frequency(resources, ResourceTypes.GRAIN) == 2 )
-        $m: Move( move == MoveTypes.MONOPOLY_GRAIN)
+        $m: Move()
 
     then
         System.out.println("Building hotel!");
-        $m.setMove(MoveTypes.BUILD_HOTEL);
+        $m.addMove(MoveTypes.BUILD_HOTEL);
+
+        System.out.println("Removing resources from hand");
+        List<ResourceTypes> availableResources = $is.getResources();
+        availableResources.remove(ResourceTypes.ROCK);
+        availableResources.remove(ResourceTypes.ROCK);
+        availableResources.remove(ResourceTypes.ROCK);
+        availableResources.remove(ResourceTypes.GRAIN);
+        availableResources.remove(ResourceTypes.GRAIN);
+        System.out.println("Available resources after building hotel: " + availableResources);
+        $is.setResources(availableResources);
+
+        update($is);
         update($m);
 end
 
 rule "Build Road"
-    salience 3
+    salience 1
+    no-loop
     when
-
         $is: InputState(
                 resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)
             )
         $m: Move()
     then
-        $m.setMove(MoveTypes.BUILD_ROAD);
+        System.out.println("Building road");
+        $m.addMove(MoveTypes.BUILD_ROAD);
+
+        System.out.println("Removing resources from hand");
+        List<ResourceTypes> availableResources = $is.getResources();
+        availableResources.remove(ResourceTypes.WOOD);
+        availableResources.remove(ResourceTypes.CLAY);
+        System.out.println("Available resources after building road: " + availableResources);
+        $is.setResources(availableResources);
+
+        update($is);
         update($m);
 end
 
 rule "Buy Crazy if you have a lot rocks and grains"
-    salience 4
+    salience 1
+    no-loop
     when
 
         $is: InputState(
@@ -61,7 +96,17 @@ rule "Buy Crazy if you have a lot rocks and grains"
         $m: Move()
 
     then
+        System.out.println("Buying crazy!");
+        $m.addMove(MoveTypes.BUY_CRAZY);
 
-        $m.setMove(MoveTypes.BUY_CRAZY);
+        System.out.println("Removing resources from hand");
+        List<ResourceTypes> availableResources = $is.getResources();
+        availableResources.remove(ResourceTypes.ROCK);
+        availableResources.remove(ResourceTypes.GRAIN);
+        availableResources.remove(ResourceTypes.SHEEP);
+        System.out.println("Available resources after buying crazy: " + availableResources);
+        $is.setResources(availableResources);
+
+        update($is);
         update($m);
 end

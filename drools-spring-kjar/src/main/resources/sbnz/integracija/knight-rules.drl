@@ -1,0 +1,131 @@
+package com.catoni;
+
+import com.catoni.models.enums.*;
+import com.catoni.models.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.HashMap;
+import java.util.Map;
+
+rule "Play KNIGHT to get most knights played points"
+    no-loop
+    salience 7
+    when
+        $is: InputState(
+          playerStates.get("bot").getCraziesList().contains(CrazyTypes.KNIGHT)
+        )
+        $gs: GlobalState(
+          mostKnights.keySet().toArray()[0] < $is.getPlayerStates().get("bot").getNumberOfKnights() + 1
+        )
+        $m: Move()
+
+    then
+        int currentMostKnights = (int) $gs.mostKnights.keySet().toArray()[0];
+        System.out.println("Current most knights: " + currentMostKnights);
+        System.out.println("Current bot's knights: " + $is.getPlayerStates().get("bot").getNumberOfKnights());
+
+        State myPlayerState = $is.getPlayerStates().get("bot");
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.KNIGHT);
+        myPlayerState.setCraziesList(newCraziesList);
+        Map<String, State> newState = $is.getPlayerStates();
+        newState.put("bot", myPlayerState);
+        
+        modify($is) {setPlayerStates(newState)};
+        $m.addMove(MoveTypes.PLAY_KNIGHT);
+        $gs.mostKnights.remove(currentMostKnights);
+        $gs.mostKnights.put($is.getPlayerStates().get("bot").getNumberOfKnights() + 1, "bot");
+        update($gs);
+        System.out.println("New most knights: " + $gs.mostKnights);
+        update($m);
+end
+
+rule "Play KNIGHT to steal a needed card"
+  salience 6
+  no-loop
+  when
+    $is: InputState(
+      playerStates.get("bot").getCraziesList().contains(CrazyTypes.KNIGHT) && (
+      (resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY) && resources.contains(ResourceTypes.GRAIN) && !resources.contains(ResourceTypes.SHEEP)) ||
+      (resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY) && resources.contains(ResourceTypes.SHEEP) && !resources.contains(ResourceTypes.GRAIN)) ||
+      (resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.GRAIN) && resources.contains(ResourceTypes.SHEEP) && !resources.contains(ResourceTypes.CLAY)) ||
+      (resources.contains(ResourceTypes.CLAY) && resources.contains(ResourceTypes.GRAIN) && resources.contains(ResourceTypes.SHEEP) && !resources.contains(ResourceTypes.WOOD)) ||
+      (resources.contains(ResourceTypes.CLAY) && resources.contains(ResourceTypes.GRAIN) && resources.contains(ResourceTypes.SHEEP) && !resources.contains(ResourceTypes.WOOD)) ||
+      (Collections.frequency(resources, ResourceTypes.ROCK) == 2 && Collections.frequency(resources, ResourceTypes.GRAIN) == 2) ||
+      (Collections.frequency(resources, ResourceTypes.ROCK) == 3 && Collections.frequency(resources, ResourceTypes.GRAIN) == 1)
+      )
+    )
+    $m: Move()
+  then
+    Map<String, Integer> playersAndPoints = new HashMap<>();
+    for (Map.Entry<String, State> entry : $is.getPlayerStates().entrySet()) {
+      if (entry.getKey() == "bot") {
+        continue;
+      }
+      playersAndPoints.put(entry.getKey(), entry.getValue().getTotalGamePoints(entry.getKey()));
+    }
+
+    System.out.println("Player points: " + playersAndPoints);
+    String maxName = playersAndPoints.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
+    System.out.println("MOST POINTS PLAYER: " + maxName + " -> Stealing card from " + maxName);
+
+    switch(maxName) {
+      case "player1":
+        $m.addMove(MoveTypes.STEAL_FROM_P1);
+        break;
+      case "player2":
+        $m.addMove(MoveTypes.STEAL_FROM_P2);
+        break;
+      case "player3":
+        $m.addMove(MoveTypes.STEAL_FROM_P3);
+        break;
+    }
+
+    List<ResourceTypes> available = $is.getResources();
+
+    List<ResourceTypes> allTypes = new ArrayList<>();
+    allTypes.add(ResourceTypes.WOOD);
+    allTypes.add(ResourceTypes.CLAY);
+    allTypes.add(ResourceTypes.GRAIN);
+    allTypes.add(ResourceTypes.SHEEP);
+    allTypes.add(ResourceTypes.ROCK);
+    int randomNum = ThreadLocalRandom.current().nextInt(0, 5);
+    ResourceTypes resource = allTypes.get(randomNum);
+    available.add(resource);
+
+    switch(resource) {
+        case WOOD:
+            $m.addMove(MoveTypes.DRAW_WOOD);
+            break;
+        case CLAY:
+            $m.addMove(MoveTypes.DRAW_CLAY);
+            break;
+        case GRAIN:
+            $m.addMove(MoveTypes.DRAW_GRAIN);
+            break;
+        case SHEEP:
+            $m.addMove(MoveTypes.DRAW_SHEEP);
+            break;
+        case ROCK:
+            $m.addMove(MoveTypes.DRAW_ROCK);
+            break;
+        default:
+            break;
+    }
+
+    System.out.println("Resource drawn: " + resource);
+
+    State myPlayerState = $is.getPlayerStates().get("bot");
+    List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+    newCraziesList.remove(CrazyTypes.KNIGHT);
+    myPlayerState.setCraziesList(newCraziesList);
+    Map<String, State> newState = $is.getPlayerStates();
+    newState.put("bot", myPlayerState);
+
+    modify($is) {setResources(available), setPlayerStates(newState)}
+    update($m);
+
+end

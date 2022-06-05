@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 rule "Play ROAD_BUILDING to build two roads"
+    no-loop
+    salience 6
     when
         $is: InputState(
           playerStates.get("bot").getCraziesList().contains(CrazyTypes.ROAD_BUILDING)
@@ -22,23 +24,28 @@ rule "Play ROAD_BUILDING to build two roads"
 
     then
         int currentLongestRoad = (int) $gs.longestRoad.keySet().toArray()[0];
-        System.out.println("Current global state: " + currentLongestRoad);
+        System.out.println("Current longest road: " + currentLongestRoad);
         System.out.println("Current bot's roads: " + $is.getPlayerStates().get("bot").getNumberOfRoads());
+
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
-        Map<String, State> newState = new HashMap<>();
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.MONOPOLY);
+        myPlayerState.setCraziesList(newCraziesList);
+        Map<String, State> newState = $is.getPlayerStates();
         newState.put("bot", myPlayerState);
         
         modify($is) {setPlayerStates(newState)};
-        $m.setMove(MoveTypes.PLAY_ROAD_BUILDING);
+        $m.addMove(MoveTypes.PLAY_ROAD_BUILDING);
         $gs.longestRoad.remove(currentLongestRoad);
         $gs.longestRoad.put($is.getPlayerStates().get("bot").getNumberOfRoads() + 2, "bot");
         update($gs);
-        System.out.println("New global state longest road: " + $gs.longestRoad);
+        System.out.println("New longest road: " + $gs.longestRoad);
         update($m);
 end
 
 rule "Play ROAD_BUILDING to build a house"
+    no-loop
+    salience 6
     when
         $is: InputState(
           playerStates.get("bot").getCraziesList().contains(CrazyTypes.ROAD_BUILDING) &&
@@ -48,11 +55,12 @@ rule "Play ROAD_BUILDING to build a house"
 
     then
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
-        Map<String, State> newState = new HashMap<>();
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.ROAD_BUILDING);
+        myPlayerState.setCraziesList(newCraziesList);
+        Map<String, State> newState = $is.getPlayerStates();
         newState.put("bot", myPlayerState);
-        
         modify($is) {setPlayerStates(newState)};
-        $m.setMove(MoveTypes.PLAY_ROAD_BUILDING);
+        $m.addMove(MoveTypes.PLAY_ROAD_BUILDING);
         update($m);
 end

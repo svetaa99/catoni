@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 rule "Play YEAR_OF_PLENTY to build a house"
-    salience 5
+    no-loop
     when
         $is: InputState(
             playerStates.get("bot").getCraziesList().contains(CrazyTypes.YEAR_OF_PLENTY) && (
@@ -27,15 +27,15 @@ rule "Play YEAR_OF_PLENTY to build a house"
 
     then
         $m.setObjects($is.getResources());
-        $m.setMove(MoveTypes.PLAY_YEAR_OF_PLENTY);
+        $m.addMove(MoveTypes.PLAY_YEAR_OF_PLENTY);
         update($m);
 end
 
 rule "Draw resources for a house after playing YEAR_OF_PLENTY"
-    salience 6
+    no-loop
     when
         $is: InputState()
-        $m: Move( move == MoveTypes.PLAY_YEAR_OF_PLENTY )
+        $m: Move( moveList.get(moveList.size() - 1) == MoveTypes.PLAY_YEAR_OF_PLENTY )
 
     then
         List<ResourceTypes> available = $m.getObjects();
@@ -45,21 +45,29 @@ rule "Draw resources for a house after playing YEAR_OF_PLENTY"
         int drawedCards = 0;
 
         if (available.contains(ResourceTypes.WOOD) == false) {
+            System.out.println("Drawing WOOD");
+            $m.addMove(MoveTypes.DRAW_WOOD);
             available.add(ResourceTypes.WOOD);
             drawedCards++;
         }
 
         if (available.contains(ResourceTypes.CLAY) == false) {
+            System.out.println("Drawing CLAY");
+            $m.addMove(MoveTypes.DRAW_CLAY);
             available.add(ResourceTypes.CLAY);
             drawedCards++;
         }
 
         if (available.contains(ResourceTypes.GRAIN) == false) {
+            System.out.println("Drawing GRAIN");
+            $m.addMove(MoveTypes.DRAW_GRAIN);
             available.add(ResourceTypes.GRAIN);
             drawedCards++;
         }
 
         if (available.contains(ResourceTypes.SHEEP) == false) {
+            System.out.println("Drawing SHEEP");
+            $m.addMove(MoveTypes.DRAW_SHEEP);
             available.add(ResourceTypes.SHEEP);
             drawedCards++;
         }
@@ -72,14 +80,39 @@ rule "Draw resources for a house after playing YEAR_OF_PLENTY"
             allTypes.add(ResourceTypes.SHEEP);
             allTypes.add(ResourceTypes.ROCK);
             int randomNum = ThreadLocalRandom.current().nextInt(0, 5);
-            available.add(allTypes.get(randomNum));
+            ResourceTypes resource = allTypes.get(randomNum);
+            available.add(resource);
+
+            switch(resource) {
+                case WOOD:
+                    $m.addMove(MoveTypes.DRAW_WOOD);
+                    break;
+                case CLAY:
+                    $m.addMove(MoveTypes.DRAW_CLAY);
+                    break;
+                case GRAIN:
+                    $m.addMove(MoveTypes.DRAW_GRAIN);
+                    break;
+                case SHEEP:
+                    $m.addMove(MoveTypes.DRAW_SHEEP);
+                    break;
+                case ROCK:
+                    $m.addMove(MoveTypes.DRAW_ROCK);
+                    break;
+                default:
+                    break;
+            }
         }
 
         System.out.println("Available resources after playing crazy and drawing cards: " + available);
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
-        Map<String, State> newState = new HashMap<>();
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.YEAR_OF_PLENTY);
+        myPlayerState.setCraziesList(newCraziesList);
+        Map<String, State> newState = $is.getPlayerStates();
         newState.put("bot", myPlayerState);
+        System.out.println("Crazies list after playing YEAR_OF_PLENTY: " + $is.getPlayerStates().get("bot").getCraziesList());
+
         modify($is) {setResources(available), setPlayerStates(newState)};
-        modify($m) {setMove(MoveTypes.END_TURN)};
+        update($m);
 end

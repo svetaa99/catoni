@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 rule "Play MONOPOLY to build a building"
+    salience 2
+    no-loop
     when
         $is: InputState(
             playerStates.get("bot").getCraziesList().contains(CrazyTypes.MONOPOLY) && (
@@ -27,15 +29,19 @@ rule "Play MONOPOLY to build a building"
         $m: Move()
 
     then
+        $m.addMove(MoveTypes.PLAY_MONOPOLY);
+        System.out.println("Added PLAY_MONOPOLY to moves list");
+
         $m.setObjects($is.getResources());
-        $m.setMove(MoveTypes.PLAY_MONOPOLY);
         update($m);
 end
 
 rule "Take resources after playing MONOPOLY to build a building"
+    salience 2
+    no-loop
     when
         $is: InputState()
-        $m: Move( move == MoveTypes.PLAY_MONOPOLY )
+        $m: Move( moveList.get(moveList.size() - 1) == MoveTypes.PLAY_MONOPOLY )
 
     then
         List<ResourceTypes> available = $m.getObjects();
@@ -43,39 +49,41 @@ rule "Take resources after playing MONOPOLY to build a building"
         System.out.println("Resources before checking what card to ask for monopoly played: " + available);
 
         if (available.contains(ResourceTypes.WOOD) && available.contains(ResourceTypes.CLAY) && available.contains(ResourceTypes.GRAIN) && !available.contains(ResourceTypes.SHEEP)) {
-            $m.setMove(MoveTypes.MONOPOLY_SHEEP);
+            $m.addMove(MoveTypes.MONOPOLY_SHEEP);
             System.out.println("Asking for SHEEP");
             available.add(ResourceTypes.SHEEP);
         } else if (available.contains(ResourceTypes.WOOD) && available.contains(ResourceTypes.CLAY) && available.contains(ResourceTypes.SHEEP) && !available.contains(ResourceTypes.GRAIN)) {
-            $m.setMove(MoveTypes.MONOPOLY_GRAIN);
+            $m.addMove(MoveTypes.MONOPOLY_GRAIN);
             System.out.println("Asking for GRAIN");
             available.add(ResourceTypes.GRAIN);
         } else if (available.contains(ResourceTypes.WOOD) && available.contains(ResourceTypes.GRAIN) && available.contains(ResourceTypes.SHEEP) && !available.contains(ResourceTypes.CLAY)) {
-            $m.setMove(MoveTypes.MONOPOLY_CLAY);
+            $m.addMove(MoveTypes.MONOPOLY_CLAY);
             System.out.println("Asking for CLAY");
             available.add(ResourceTypes.CLAY);
         } else if (available.contains(ResourceTypes.CLAY) && available.contains(ResourceTypes.GRAIN) && available.contains(ResourceTypes.SHEEP) && !available.contains(ResourceTypes.WOOD)) {
-            $m.setMove(MoveTypes.MONOPOLY_WOOD);
+            $m.addMove(MoveTypes.MONOPOLY_WOOD);
             System.out.println("Asking for WOOD");
             available.add(ResourceTypes.WOOD);
         } else if (Collections.frequency(available, ResourceTypes.ROCK) == 2 && Collections.frequency(available, ResourceTypes.GRAIN) == 2) {
-            $m.setMove(MoveTypes.MONOPOLY_ROCK);
+            $m.addMove(MoveTypes.MONOPOLY_ROCK);
             System.out.println("Asking for ROCK");
             available.add(ResourceTypes.ROCK);
         } else if (Collections.frequency(available, ResourceTypes.ROCK) == 3 && Collections.frequency(available, ResourceTypes.GRAIN) == 1) {
-            $m.setMove(MoveTypes.MONOPOLY_GRAIN);
+            $m.addMove(MoveTypes.MONOPOLY_GRAIN);
             System.out.println("Asking for GRAIN");
             available.add(ResourceTypes.GRAIN);
         }
 
         State myPlayerState = $is.getPlayerStates().get("bot");
-        myPlayerState.setCraziesList(new ArrayList<>());
-        Map<String, State> newState = new HashMap<>();
+        List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
+        newCraziesList.remove(CrazyTypes.MONOPOLY);
+        myPlayerState.setCraziesList(newCraziesList);
+        Map<String, State> newState = $is.getPlayerStates();
         newState.put("bot", myPlayerState);
-        System.out.println("Current state: " + newState);
         modify($is) {setResources(available), setPlayerStates(newState)};
         System.out.println("Available resources after playing MONOPOLY and drawing cards: " + $is.getResources());
-        modify($m) {setMove(MoveTypes.END_TURN)};
+
+        System.out.println("Crazies list after playing MONOPOLY: " + $is.getPlayerStates().get("bot").getCraziesList());
 end
 
 
