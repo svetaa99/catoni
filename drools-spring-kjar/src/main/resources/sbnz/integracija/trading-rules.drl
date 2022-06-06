@@ -13,6 +13,11 @@ import java.util.Map;
 import com.catoni.models.dto.*;
 import java.lang.Number;
 
+declare TooManyOffersEvent
+    @role(event)
+    cnt: Integer
+end
+
 rule "Offer player trade if missing resource"
     lock-on-active true
     salience -1
@@ -48,7 +53,16 @@ rule "Offer player trade if missing resource"
         )
 
         $offer: TradeOffer()
+        Number($tradeCount: intValue <= 2) from accumulate(
+            $o: TradeOffer( this meets[2m] $offer ),
+            count($o)
+        )
+        not(TooManyOffersEvent(cnt >= 3))
     then
+        System.out.println($tradeCount);
+        if($tradeCount > 2){
+            insert(new TooManyOffersEvent(3));
+        }
         System.out.println("T T T T T");
         System.out.println($wood + " " + $clay + " " + $grain + " " + $sheep + " " + $rock);
         Map<ResourceTypes, Integer> offer = new HashMap<>();
@@ -104,6 +118,7 @@ rule "Offer player trade if missing resource"
             receive.put(wanted, 1);
             $offer.setOffer(offer);
             $offer.setReceive(receive);
+            //insert($offer);
             update($offer);
         }
 end
