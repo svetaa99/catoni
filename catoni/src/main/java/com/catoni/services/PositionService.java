@@ -16,8 +16,6 @@ public class PositionService {
 
     private final KieContainer kieContainer;
 
-    private int turn = 0;
-
     @Autowired
     public PositionService(KieContainer kieContainer){
         System.out.println("PositionService Initialising a new example session.");
