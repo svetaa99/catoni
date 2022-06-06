@@ -72,6 +72,7 @@ rule "Build Road Start"
         $dtoR.setRow2(r.getRow2());
         $dtoR.setCol2(r.getCol2());
         $dtoR.setPlayer("bot");
+
         $is.getPosition().addRoad($dtoR);
         update($dtoR);
 end

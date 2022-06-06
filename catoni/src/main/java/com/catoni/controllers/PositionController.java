@@ -58,11 +58,21 @@ public class PositionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //TESTING METHOD
+    //TESTING METHODS
     @GetMapping(value = "available-player-building-spots", produces = "application/json")
     public ResponseEntity<List<Building>> avaiableForPlayer(){
         List<Building> retVal = position.getAvailableBuildingSpotsForPlayer("bot");
 
         return new ResponseEntity<>(retVal, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "available-player-hotel-spots", produces = "application/json")
+    public ResponseEntity<List<Building>> availableHotelsForPlayer(){
+        return new ResponseEntity<>(position.getAvailableHotelSpotsForPlayer("bot"), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "available-player-road-spots", produces = "application/json")
+    public ResponseEntity<List<Road>> availableRoadsForPlayer(){
+        return new ResponseEntity<>(position.getAvailableRoadSpotsForPlayer("bot"), HttpStatus.OK);
     }
 }

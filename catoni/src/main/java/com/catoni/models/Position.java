@@ -149,6 +149,27 @@ public class Position {
         return retVal;
     }
 
+    public List<Building> getAvailableHotelSpotsForPlayer(String playerName){
+        return buildings
+                .stream()
+                .filter(b -> b.getOwner().equals(playerName) && b.getType() == BuildingTypes.HOUSE)
+                .collect(Collectors.toList());
+    }
+
+    public List<Road> getAvailableRoadSpotsForPlayer(String playerName){
+        List<Road> retVal = new ArrayList<>();
+        //VRATI SVE PUTEVE KOJI SU STATUSA FREE I KOJI SE NADOVEZUJU NA NEKI OD PUTEVA KOJE SADRZI KORISNIK
+        List<Road> roadsForPlayer = roads.stream().filter(r -> r.getOwner().equals(playerName)).collect(Collectors.toList());
+        for(Road rp: roadsForPlayer){
+            for(Road r: roads){
+                if(r.continues(rp)){
+                    retVal.add(r);
+                }
+            }
+        }
+        return retVal;
+    }
+
     public List<Building> getTwoPlaceApart(BuildingDto b){
         List<Building> retVal = new ArrayList<>();
         for(Building building: buildings){
