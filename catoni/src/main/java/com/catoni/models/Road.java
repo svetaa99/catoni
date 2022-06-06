@@ -48,7 +48,7 @@ public class Road {
     @Override
     public String toString() {
         return "Road{" +
-                ", row1=" + row1 +
+                "row1=" + row1 +
                 ", col1=" + col1 +
                 ", row2=" + row2 +
                 ", col2=" + col2 +

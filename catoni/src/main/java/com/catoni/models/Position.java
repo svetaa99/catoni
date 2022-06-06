@@ -149,6 +149,18 @@ public class Position {
         return retVal;
     }
 
+    public List<Building> getTwoPlaceApart(BuildingDto b){
+        List<Building> retVal = new ArrayList<>();
+        for(Building building: buildings){
+            if(building.getRow() == b.getRow()){
+                if(building.getColumn() == b.getCol() - 2 || building.getColumn() == b.getCol() + 2){
+                    retVal.add(building);
+                }
+            }
+        }
+        return retVal;
+    }
+
     public List<Road> getRoadsForBuilding(Building b){
         return roads.stream().filter(r -> (r.getBuilding1().equals(b) || r.getBuilding2().equals(b)) && r.getStatus() == Status.FREE).collect(Collectors.toList());
     }
@@ -166,6 +178,7 @@ public class Position {
 
     public Building addBuilding(BuildingDto building){
         //SET ONE TO TAKEN AND ALL WITH DISTANCE = 1 TO BLOCKED(2 or 3)
+        System.out.println("ZAUZIMAMO");
         for (Building b: buildings){
             if(b.equalsDto(building)){
                 for(Road r: roads){
@@ -246,7 +259,11 @@ public class Position {
         }
     }
 
-    public Road getRoadTowardsBuilding(Building start, Building end){
+    public Road getRoadTowardsBuilding(BuildingDto start, Building end){
+        System.out.println("OD");
+        System.out.println(start);
+        System.out.println("DO");
+        System.out.println(end);
         List<Building> connections = new ArrayList<>();
         for (Road r : roads){
             if(r.getBuilding1().equals(end))
@@ -256,11 +273,11 @@ public class Position {
         }
         for (Road r: roads) {
             if(connections.contains(r.getBuilding1())){
-                if(start.equals(r.getBuilding2()))
+                if(r.getBuilding2().equalsDto(start))
                     return r;
             }
             else if(connections.contains(r.getBuilding2())){
-                if (start.equals(r.getBuilding1()))
+                if (r.getBuilding1().equalsDto(start))
                     return r;
             }
         }

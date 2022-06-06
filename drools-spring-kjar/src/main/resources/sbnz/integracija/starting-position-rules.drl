@@ -11,53 +11,67 @@ import com.catoni.models.dto.*;
 import java.lang.Number;
 
 
-rule "Build House and Road Start"
-    no-loop
+rule "Build House Start"
+    lock-on-active true
+    salience 100
     when
-       $p: Position()
+       $is: InputState()
 
        accumulate(
-            Building($t: this, status == Status.FREE) from $p.buildings,
+            Building($t: this, status == Status.FREE) from $is.position.buildings,
             $free: collectList($t)
        )
 
        Number($val: doubleValue) from accumulate(
-            Building($t: this, status == Status.FREE) from $p.buildings,
+            Building($t: this, status == Status.FREE) from $free,
             max($t.getSumOfChances())
        )
 
-       $b: Building(status == Status.FREE && getSumOfChances() == $val) from $p.buildings
-
-       Number($eval: doubleValue) from accumulate(
-            Building($t: this, status == Status.FREE,
-                (row == $b.row && column == $b.column + 2) ||
-                (row == $b.row && column == $b.column - 2) ||
-                (row == $b.row - 1 && column == $b.column - 2) ||
-                (row == $b.row - 1 && column == $b.column) ||
-                (row == $b.row + 1 && column == $b.column) ||
-                (row == $b.row + 1 && column == $b.column + 2)
-                ) from $p.buildings,
-            max($t.getSumOfChances())
+       accumulate(
+            Building($tt: this, getSumOfChances() == $val) from $free,
+            $best: collectList($tt)
        )
-       $br: Building(getSumOfChances() == $eval) from $p.buildings
-
-       $r : Road() from $p.getRoadTowardsBuilding($b, $br)
 
        $dtoB: BuildingDto()
-       $dtoR: RoadDto()
+
     then
-        System.out.println($free);
-        $dtoB.setRow($b.getRow());
-        $dtoB.setCol($b.getColumn());
-        $dtoB.setPlayerName("bot");
-        $dtoB.setType(BuildingTypes.HOUSE);
-        update($dtoB);
-        $dtoR.setRow1($r.getRow1());
-        $dtoR.setCol1($r.getCol1());
-        $dtoR.setRow2($r.getRow2());
-        $dtoR.setCol2($r.getCol2());
+       System.out.println($best.get(0));
+
+       $dtoB.setRow(((Building) $best.get(0)).getRow());
+       $dtoB.setCol(((Building) $best.get(0)).getColumn());
+       $dtoB.setType(BuildingTypes.HOUSE);
+       $dtoB.setPlayerName("bot");
+
+       $is.getPosition().addBuilding($dtoB);
+       update($dtoB);
+end
+
+rule "Build Road Start"
+    no-loop
+    salience 50
+    when
+        $is: InputState()
+
+        $b: BuildingDto(playerName == "bot")
+
+        Number($val: doubleValue) from accumulate(
+            Building($t: this) from $is.position.getTwoPlaceApart($b),
+            max($t.getSumOfChances())
+        )
+        accumulate(
+            Building($tt: this, getSumOfChances() == $val) from $is.position.getTwoPlaceApart($b),
+            $br: collectList($tt)
+        )
+        $dtoR: RoadDto()
+    then
+        System.out.println("RU RU RU");
+        System.out.println((Building) $br.get(0));
+        Road r = $is.getPosition().getRoadTowardsBuilding($b, (Building) $br.get(0));
+        $dtoR.setRow1(r.getRow1());
+        $dtoR.setCol1(r.getCol1());
+        $dtoR.setRow2(r.getRow2());
+        $dtoR.setCol2(r.getCol2());
         $dtoR.setPlayer("bot");
+        $is.getPosition().addRoad($dtoR);
         update($dtoR);
-        $p.addBuilding($dtoB);
-        update($p);
 end

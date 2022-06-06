@@ -3,10 +3,10 @@ package com.catoni.models.dto;
 import com.catoni.models.enums.BuildingTypes;
 
 public class BuildingDto {
-    int row;
-    int col;
-    String playerName;
-    BuildingTypes type;
+    public int row;
+    public int col;
+    public String playerName;
+    public BuildingTypes type;
 
     public int getRow() {
         return row;

@@ -1,5 +1,7 @@
 package com.catoni.services;
 
+import com.catoni.models.GlobalState;
+import com.catoni.models.InputState;
 import com.catoni.models.Position;
 import com.catoni.models.dto.BuildingDto;
 import com.catoni.models.dto.RoadDto;
@@ -13,32 +15,32 @@ import org.springframework.stereotype.Service;
 public class PositionService {
 
     private final KieContainer kieContainer;
-    private final KieSession kieSession;
+
+    private int turn = 0;
 
     @Autowired
     public PositionService(KieContainer kieContainer){
         System.out.println("PositionService Initialising a new example session.");
         this.kieContainer = kieContainer;
-        this.kieSession= kieContainer.newKieSession();
     }
 
-    public StartSelectionDto getHouseAndRoadPosition(Position position){
-//        System.out.println(position);
+    public StartSelectionDto getHouseAndRoadPosition(InputState inputState){
+
         StartSelectionDto dto = new StartSelectionDto();
         BuildingDto bDto = new BuildingDto();
         RoadDto rDto = new RoadDto();
-//        System.out.println("BEFORE");
-//        System.out.println(dto);
 
-        kieSession.insert(position);
+        KieSession kieSession = kieContainer.newKieSession();
+        kieSession.insert(inputState);
         kieSession.insert(bDto);
         kieSession.insert(rDto);
+        kieSession.insert(GlobalState.getInstance());
         kieSession.fireAllRules();
+        kieSession.dispose();
 
         dto.setBuilding(bDto);
         dto.setRoad(rDto);
-//        System.out.println("AFTER");
-//        System.out.println(dto);
+
         return dto;
     }
 }
