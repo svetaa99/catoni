@@ -18,6 +18,16 @@ declare TooManyOffersEvent
     cnt: Integer
 end
 
+declare TradeAcceptedEvent
+    @role(event)
+    player: String
+end
+
+declare TradeDeclinedEvent
+    @role(event)
+    seconds: Integer
+end
+
 rule "Offer player trade if missing resource"
     lock-on-active true
     salience -1
@@ -25,6 +35,8 @@ rule "Offer player trade if missing resource"
         $is: InputState(
             resources.size() >= 4
         )
+        $m: Move()
+
         Number($wood: intValue) from accumulate(
             ResourceTypes($t: this, $t == ResourceTypes.WOOD) from $is.resources,
             count($t)
@@ -52,7 +64,7 @@ rule "Offer player trade if missing resource"
             count($t)
         )
 
-        $offer: TradeOffer()
+        $offer: TradeOffer() from $m.trade.getTradeOffer()
         Number($tradeCount: intValue <= 2) from accumulate(
             $o: TradeOffer( this meets[2m] $offer ),
             count($o)
@@ -62,6 +74,8 @@ rule "Offer player trade if missing resource"
         System.out.println($tradeCount);
         if($tradeCount > 2){
             insert(new TooManyOffersEvent(3));
+            $m.addMove(MoveTypes.END_TURN);
+            update($m);
         }
         System.out.println("T T T T T");
         System.out.println($wood + " " + $clay + " " + $grain + " " + $sheep + " " + $rock);
@@ -118,7 +132,36 @@ rule "Offer player trade if missing resource"
             receive.put(wanted, 1);
             $offer.setOffer(offer);
             $offer.setReceive(receive);
-            //insert($offer);
-            update($offer);
+            insert($offer);
+            $m.addMove(MoveTypes.OFFER_TRADE_WITH_PLAYER);
+            //update($offer);
+            update($m);
         }
+end
+
+rule "Trade accepted"
+
+    when
+        $is: InputState()
+        $m: Move( trade.getAcceptedTrade().size() > 0 && moveList.contains(MoveTypes.OFFER_TRADE_WITH_PLAYER))
+
+    then
+        Map.Entry<ResourceTypes,Integer> entry = $m.trade.getTradeOffer().getReceive().entrySet().iterator().next();
+        ResourceTypes key = entry.getKey();
+        Integer value = entry.getValue();
+        $is.getResources().add(key);
+        $m.trade = new Trade();
+        update($is);
+        update($m);
+end
+
+rule "End turn"
+    salience -150
+    no-loop
+    when
+        $is: InputState( resources.size() <= 2 )
+        $m: Move()
+    then
+        $m.addMove(MoveTypes.END_TURN);
+        update($m);
 end

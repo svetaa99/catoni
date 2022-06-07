@@ -10,11 +10,19 @@ import java.util.Map;
 
 public class InputState {
 
+    private static InputState instance = null;
+
     private List<ResourceTypes> resources;
 
     private int distanceToHarbor;
 
     private Map<String, State> playerStates;
+
+    public static InputState getInstance(){
+        if(instance == null)
+            instance = new InputState();
+        return instance;
+    }
 
     @Autowired
     private Position position = Position.getInstance();
@@ -116,6 +124,10 @@ public class InputState {
 
     public void setMyTurn(boolean myTurn) {
         isMyTurn = myTurn;
+    }
+
+    public void addResources(List<ResourceTypes> resources){
+        this.resources.addAll(resources);
     }
 
     @Override

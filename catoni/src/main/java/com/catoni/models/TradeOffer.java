@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Role(Role.Type.EVENT)
 @Timestamp("offeredAt")
-@Expires("2m")
+@Expires("30s")
 public class TradeOffer {
 
     private Map<ResourceTypes, Integer> offer;

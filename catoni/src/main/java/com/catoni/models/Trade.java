@@ -1,12 +1,13 @@
 package com.catoni.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Trade {
 
-    private TradeOffer tradeOffer;
+    private TradeOffer tradeOffer = new TradeOffer();
     // players that accepted the trade
-    private List<String> acceptedTrade;
+    private List<String> acceptedTrade = new ArrayList<>();
 
     public Trade() {}
 

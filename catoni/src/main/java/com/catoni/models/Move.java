@@ -10,11 +10,14 @@ import java.util.List;
 public class Move {
 
     public List<MoveTypes> moveList;
+
     public List<ResourceTypes> objects = new ArrayList<>();
 
     public List<Building> buildings = new ArrayList<>();
 
     public List<Road> roads = new ArrayList<>();
+
+    public Trade trade = new Trade();
 
     public Move() {
         this.moveList = new ArrayList<>();
@@ -40,6 +43,5 @@ public class Move {
     public void setObjects(List<ResourceTypes> objects) {
         this.objects = objects;
     }
-
 
 }

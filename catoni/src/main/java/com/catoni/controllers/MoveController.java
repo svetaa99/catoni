@@ -1,11 +1,10 @@
 package com.catoni.controllers;
 
-import com.catoni.models.InputState;
-import com.catoni.models.Item;
-import com.catoni.models.Move;
-import com.catoni.models.Position;
+import com.catoni.models.*;
 import com.catoni.services.MoveService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,19 +14,27 @@ public class MoveController {
     @Autowired
     private MoveService moveService;
 
+    private final InputState inputState = InputState.getInstance();
+
     public MoveController() {};
 
-    @PostMapping(value = "/", produces = "application/json")
-    public Move getMoves(@RequestBody InputState inputState) {
-
+    @GetMapping(value = "/", produces = "application/json")
+    public Move getMoves() {
         System.out.println("Current input state: " + inputState);
         Move move = moveService.getMove(inputState);
         System.out.println("Move to play -> " + move.moveList);
         return move;
     }
 
+    @PostMapping(value = "/accept", produces = "application/json")
+    public ResponseEntity<Boolean> acceptTrade(@RequestBody Trade trade){
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    //TESTING METHODS
     @GetMapping(value="/check-position")
-    public void printPosition(@RequestBody InputState inputState) {
+    public void printPosition() {
         System.out.println(inputState.getPosition());
     }
 
