@@ -58,12 +58,6 @@ rule "Build House and Road Start"
         $dtoR.setCol2($r.getCol2());
         $dtoR.setPlayer("bot");
         update($dtoR);
-        List<Building> buildingsCopy = $p.getBuildings();
-        for(Building b1: buildingsCopy){
-            if(b1.equals($b)){
-                b1.setStatus(Status.TAKEN);
-            }
-        }
-        $p.setBuildings(buildingsCopy);
+        $p.addBuilding($dtoB);
         update($p);
 end
