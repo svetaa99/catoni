@@ -30,7 +30,7 @@ end
 
 rule "Offer player trade if missing resource"
     lock-on-active true
-    salience -1
+    salience -90
     when
         $is: InputState(
             resources.size() >= 4
@@ -140,27 +140,35 @@ rule "Offer player trade if missing resource"
 end
 
 rule "Trade accepted"
-
+    no-loop
+    salience 500
     when
         $is: InputState()
-        $m: Move( trade.getAcceptedTrade().size() > 0 && moveList.contains(MoveTypes.OFFER_TRADE_WITH_PLAYER))
+        $m: Move( trade.getAcceptedTrade().size() > 0 && moveList.get(moveList.size()-1) == MoveTypes.OFFER_TRADE_WITH_PLAYER )
 
     then
+        System.out.println($m.trade.getAcceptedTrade().get(0) + " Accepted the trade");
         Map.Entry<ResourceTypes,Integer> entry = $m.trade.getTradeOffer().getReceive().entrySet().iterator().next();
         ResourceTypes key = entry.getKey();
         Integer value = entry.getValue();
         $is.getResources().add(key);
-        $m.trade = new Trade();
+
+        entry = $m.trade.getTradeOffer().getOffer().entrySet().iterator().next();
+        key = entry.getKey();
+        value = entry.getValue();
+        $is.getResources().remove(key);
+        //$m.moveList = new ArrayList<>();
+        $m.addMove(MoveTypes.EXECUTE_TRADE);
         update($is);
         update($m);
 end
 
 rule "End turn"
-    salience -150
+    salience -1500
     no-loop
     when
-        $is: InputState( resources.size() <= 2 )
-        $m: Move()
+        $is: InputState()
+        $m: Move( moveList.get(moveList.size()-1) != MoveTypes.OFFER_TRADE_WITH_PLAYER )
     then
         $m.addMove(MoveTypes.END_TURN);
         update($m);

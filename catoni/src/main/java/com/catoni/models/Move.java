@@ -44,4 +44,13 @@ public class Move {
         this.objects = objects;
     }
 
+    @Override
+    public String toString() {
+        return "Move{" +
+                "moveList=" + moveList +
+                ", objects=" + objects +
+                ", buildings=" + buildings +
+                ", trade=" + trade +
+                '}';
+    }
 }

@@ -6,6 +6,7 @@ import com.catoni.models.enums.BuildingTypes;
 import com.catoni.models.enums.CrazyTypes;
 import com.catoni.models.enums.ResourceTypes;
 import com.catoni.services.PositionService;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,6 +78,27 @@ public class PositionController {
         return new ResponseEntity<>(inputState, HttpStatus.OK);
     }
 
+    @GetMapping(value="play-knight/{playerName}/{playerToStealFrom}", produces = "application/json")
+    public ResponseEntity<InputState> playKnight(@PathVariable String playerName, @PathVariable String playerToStealFrom){
+        throw new NotImplementedException();
+    }
+
+    @GetMapping(value="play-yop/{playerName}")
+    public ResponseEntity<InputState> playYop(@PathVariable String playerName){
+        //MOZE I NA FRONTU PA SAMO ADD-RESOURCES
+        throw new NotImplementedException();
+    }
+
+    @GetMapping(value = "play-monopoly/{playerName}")
+    public ResponseEntity<InputState> playMonopoly(@PathVariable String playerName){
+        throw new NotImplementedException();
+    }
+
+    @GetMapping(value = "play-rb/{playerName}")
+    public ResponseEntity<InputState> playRoadBuilder(@PathVariable String playerName){
+        throw new NotImplementedException();
+    }
+
     //POSITION MANIPULATION
     @PostMapping(value="road", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Road> addRoad(@RequestBody RoadDto road){
@@ -144,5 +166,10 @@ public class PositionController {
     public ResponseEntity<InputState> setInputState(@RequestBody InputState is){
         inputState = is;
         return new ResponseEntity<>(inputState, HttpStatus.OK);
+    }
+
+    @GetMapping(value="print-is")
+    public void print(){
+        System.out.println(inputState);
     }
 }

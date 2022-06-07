@@ -31,7 +31,7 @@ rule "Available house position"
 
     $b: Building(status == Status.FREE && getSumOfChances() == $val) from $available
 
-    $m: Move()
+    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE) )
 
   then
     $m.addMove(MoveTypes.POTENTIAL_BUILD_HOUSE);

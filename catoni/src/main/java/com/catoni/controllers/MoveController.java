@@ -27,8 +27,9 @@ public class MoveController {
     }
 
     @PostMapping(value = "/accept", produces = "application/json")
-    public ResponseEntity<Boolean> acceptTrade(@RequestBody Trade trade){
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Move> answerTrade(@RequestBody Trade trade){
+        Move move = moveService.getMove(inputState, trade);
+        return new ResponseEntity<>(move, HttpStatus.CREATED);
     }
 
 
