@@ -34,8 +34,100 @@ rule "Available house position"
     $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE) )
 
   then
+    System.out.println("AVAILABLE HOUSES");
+    System.out.println($available);
     $m.addMove(MoveTypes.POTENTIAL_BUILD_HOUSE);
     $m.addBuilding($b);
     update($m);
 
+end
+
+rule "Available hotel position"
+  lock-on-active true
+  no-loop
+  salience 100
+  when
+    $is: InputState()
+
+    accumulate(
+      Building($t: this) from $is.position.getAvailableHotelSpotsForPlayer("bot"),
+      $available: collectList($t)
+    )
+
+    eval($available.size() >= 1)
+
+    Number($val: doubleValue) from accumulate(
+        Building($t: this, type == BuildingTypes.HOUSE) from $available,
+        max($t.getSumOfChances())
+    )
+
+    $b: Building(type == BuildingTypes.HOUSE && getSumOfChances() == $val) from $available
+
+    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOTEL) )
+  then
+    System.out.println("DAJ HOTELAAAAA");
+    System.out.println($available);
+    $m.addMove(MoveTypes.POTENTIAL_BUILD_HOTEL);
+    $m.addBuilding($b);
+    update($m);
+
+end
+
+rule "Available road position"
+  lock-on-active true
+  no-loop
+  salience 100
+  when
+    $is: InputState()
+
+    accumulate(
+      Road($t: this) from $is.position.getAvailableRoadSpotsForPlayer("bot"),
+      $available: collectList($t)
+    )
+
+    eval($available.size() >= 1)
+
+    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_ROAD) )
+  then
+    List<Building> possibleBuildings = new ArrayList<>();
+    List<Double> possibleResourcesChances = new ArrayList<>();
+
+    for (Object road : $available) {
+      Road r = (Road) road;
+      if (r.getStatus() == Status.FREE) {
+        if (r.getBuilding1().getStatus() == Status.FREE) {
+          possibleBuildings.add(r.getBuilding1());
+          double score = r.getBuilding1().getSumOfChances();
+          possibleResourcesChances.add(score);
+        }
+        
+        if (r.getBuilding2().getStatus() == Status.FREE) {
+          possibleBuildings.add(r.getBuilding2());
+          double score = r.getBuilding2().getSumOfChances();
+          possibleResourcesChances.add(score);
+        }
+      }
+    }
+
+    System.out.println("POSSIBLE HOUSES");
+    System.out.println(possibleBuildings);
+    
+    if (possibleBuildings.size() > 0) {
+      Double maxChance = Collections.max(possibleResourcesChances);
+      int indexOfMax = possibleResourcesChances.indexOf(maxChance);
+      System.out.println("BEST HOUSE TO BUILD");
+      System.out.println(possibleBuildings.get(indexOfMax));
+      Building bestBuilding = possibleBuildings.get(indexOfMax);
+
+      for (Object road : $available) {
+        Road r = (Road) road;
+        if (r.getBuilding1().equals(bestBuilding) || r.getBuilding2().equals(bestBuilding)) {
+          $m.addRoad(r);
+          break;
+        }
+      }
+
+      $m.addMove(MoveTypes.POTENTIAL_BUILD_ROAD);
+      update($m);
+    }
 end

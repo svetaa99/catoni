@@ -75,6 +75,4 @@ rule "Build Road Start"
 
         $is.getPosition().addRoad($dtoR);
         update($dtoR);
-        $p.addBuilding($dtoB);
-        update($p);
 end

@@ -35,10 +35,11 @@ end
 
 rule "Build Hotel"
     salience 4
+    lock-on-active true
     no-loop
     when
         $is: InputState( Collections.frequency(resources, ResourceTypes.ROCK) == 3 && Collections.frequency(resources, ResourceTypes.GRAIN) == 2 )
-        $m: Move()
+        $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_HOTEL) )
 
     then
         System.out.println("Building hotel!");
@@ -65,7 +66,7 @@ rule "Build Road"
         $is: InputState(
                 resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)
             )
-        $m: Move()
+        $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_ROAD) )
     then
         System.out.println("Building road");
         $m.addMove(MoveTypes.BUILD_ROAD);
