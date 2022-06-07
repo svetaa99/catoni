@@ -10,11 +10,14 @@ import java.util.List;
 public class Move {
 
     public List<MoveTypes> moveList;
+
     public List<ResourceTypes> objects = new ArrayList<>();
 
     public List<Building> buildings = new ArrayList<>();
 
     public List<Road> roads = new ArrayList<>();
+
+    public Trade trade = new Trade();
 
     public Move() {
         this.moveList = new ArrayList<>();
@@ -41,5 +44,13 @@ public class Move {
         this.objects = objects;
     }
 
-
+    @Override
+    public String toString() {
+        return "Move{" +
+                "moveList=" + moveList +
+                ", objects=" + objects +
+                ", buildings=" + buildings +
+                ", trade=" + trade +
+                '}';
+    }
 }

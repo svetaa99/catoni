@@ -1,18 +1,28 @@
 package com.catoni.models;
 
+import com.catoni.models.enums.BuildingTypes;
 import com.catoni.models.enums.ResourceTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class InputState {
+
+    private static InputState instance = null;
 
     private List<ResourceTypes> resources;
 
     private int distanceToHarbor;
 
     private Map<String, State> playerStates;
+
+    public static InputState getInstance(){
+        if(instance == null)
+            instance = new InputState();
+        return instance;
+    }
 
     @Autowired
     private Position position = Position.getInstance();
@@ -34,6 +44,46 @@ public class InputState {
         this.playerStates = playerStates;
         this.position = position;
         this.isMyTurn = isMyTurn;
+    }
+
+    public List<ResourceTypes> findExcess(int wood, int clay, int grain, int sheep, int rock, BuildingTypes goal, ResourceTypes cardToGet){
+        List<ResourceTypes> retVal = new ArrayList<>();
+        if(goal == BuildingTypes.HOUSE){
+            for(int i = 0; i < rock; i++){
+                retVal.add(ResourceTypes.ROCK);
+            }
+
+            for(int i = 1; i < wood; i++){
+                retVal.add(ResourceTypes.WOOD);
+            }
+            for(int i = 1; i < clay; i++){
+                retVal.add(ResourceTypes.CLAY);
+            }
+            for(int i = 1; i < grain; i++){
+                retVal.add(ResourceTypes.GRAIN);
+            }
+            for(int i = 1; i < sheep; i++){
+                retVal.add(ResourceTypes.SHEEP);
+            }
+        }
+        else if(goal == BuildingTypes.HOTEL){
+            for(int i = 0; i < wood; i++){
+                retVal.add(ResourceTypes.WOOD);
+            }
+            for(int i = 0; i < clay; i++){
+                retVal.add(ResourceTypes.CLAY);
+            }
+            for(int i = 0; i < sheep; i++){
+                retVal.add(ResourceTypes.SHEEP);
+            }
+            for(int i = 3; i < grain; i++){
+                retVal.add(ResourceTypes.GRAIN);
+            }
+            for(int i = 4; i < rock; i++){
+                retVal.add(ResourceTypes.ROCK);
+            }
+        }
+        return retVal;
     }
 
     public Position getPosition() {
@@ -74,6 +124,10 @@ public class InputState {
 
     public void setMyTurn(boolean myTurn) {
         isMyTurn = myTurn;
+    }
+
+    public void addResources(List<ResourceTypes> resources){
+        this.resources.addAll(resources);
     }
 
     @Override

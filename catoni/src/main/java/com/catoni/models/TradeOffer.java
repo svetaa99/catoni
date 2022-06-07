@@ -1,32 +1,33 @@
 package com.catoni.models;
 
 import com.catoni.models.enums.ResourceTypes;
+import org.kie.api.definition.type.Expires;
+import org.kie.api.definition.type.Role;
+import org.kie.api.definition.type.Timestamp;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Role(Role.Type.EVENT)
+@Timestamp("offeredAt")
+@Expires("30s")
 public class TradeOffer {
 
-    /*
-        resources that are in the offer
-
-        offer: {
-            ROCK: 1,
-            WOOD: 1
-        }
-        receive: {
-            GRAIN: 2
-        }
-
-    */
     private Map<ResourceTypes, Integer> offer;
+
     private Map<ResourceTypes, Integer> receive;
 
-    public TradeOffer() {}
+    private Date offeredAt;
+
+    public TradeOffer() {
+        this.offeredAt = new Date();
+    }
 
     public TradeOffer(Map<ResourceTypes, Integer> offer, Map<ResourceTypes, Integer> receive) {
         this.offer = offer;
         this.receive = receive;
+        this.offeredAt = new Date();
     }
 
     public Map<ResourceTypes, Integer> getOffer() {
@@ -43,5 +44,22 @@ public class TradeOffer {
 
     public void setReceive(Map<ResourceTypes, Integer> receive) {
         this.receive = receive;
+    }
+
+    public Date getOfferedAt() {
+        return offeredAt;
+    }
+
+    public void setOfferedAt(Date offeredAt) {
+        this.offeredAt = offeredAt;
+    }
+
+    @Override
+    public String toString() {
+        return "TradeOffer{" +
+                "offer=" + offer +
+                ", receive=" + receive +
+                ", offeredAt=" + offeredAt +
+                '}';
     }
 }

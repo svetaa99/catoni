@@ -1,0 +1,175 @@
+package com.catoni;
+
+import com.catoni.models.enums.*;
+import com.catoni.models.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.HashMap;
+import java.util.Map;
+import com.catoni.models.dto.*;
+import java.lang.Number;
+
+declare TooManyOffersEvent
+    @role(event)
+    cnt: Integer
+end
+
+declare TradeAcceptedEvent
+    @role(event)
+    player: String
+end
+
+declare TradeDeclinedEvent
+    @role(event)
+    seconds: Integer
+end
+
+rule "Offer player trade if missing resource"
+    lock-on-active true
+    salience -90
+    when
+        $is: InputState(
+            resources.size() >= 4
+        )
+        $m: Move()
+
+        Number($wood: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.WOOD) from $is.resources,
+            count($t)
+        )
+
+        Number($clay: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.CLAY) from $is.resources,
+            count($t)
+        )
+
+        Number($grain: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.GRAIN) from $is.resources,
+            count($t)
+        )
+
+
+        Number($sheep: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.SHEEP) from $is.resources,
+            count($t)
+        )
+
+
+        Number($rock: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.ROCK) from $is.resources,
+            count($t)
+        )
+
+        $offer: TradeOffer() from $m.trade.getTradeOffer()
+        Number($tradeCount: intValue <= 2) from accumulate(
+            $o: TradeOffer( this meets[2m] $offer ),
+            count($o)
+        )
+        not(TooManyOffersEvent(cnt >= 3))
+    then
+        System.out.println($tradeCount);
+        if($tradeCount > 2){
+            insert(new TooManyOffersEvent(3));
+            $m.addMove(MoveTypes.END_TURN);
+            update($m);
+        }
+        System.out.println("T T T T T");
+        System.out.println($wood + " " + $clay + " " + $grain + " " + $sheep + " " + $rock);
+        Map<ResourceTypes, Integer> offer = new HashMap<>();
+        Map<ResourceTypes, Integer> receive = new HashMap<>();
+        List<ResourceTypes> excess = new ArrayList<>();
+        ResourceTypes wanted = null;
+
+        if($wood >= 1 && $clay >= 1 && $grain >= 1 && $sheep == 0){
+            excess = $is.findExcess($wood, $clay, $grain, $sheep, $rock, BuildingTypes.HOUSE, ResourceTypes.SHEEP);
+            wanted = ResourceTypes.SHEEP;
+
+            System.out.println("OFFER" + excess);
+            System.out.println("FOR SHEEP");
+
+        }
+        else if($wood >= 1 && $clay >= 1 && $grain == 0 && $sheep >= 1){
+            excess = $is.findExcess($wood, $clay, $grain, $sheep, $rock, BuildingTypes.HOUSE, ResourceTypes.GRAIN);
+            wanted = ResourceTypes.GRAIN;
+
+            System.out.println("OFFER" + excess);
+            System.out.println("FOR GRAIN");
+        }
+        else if($wood >= 1 && $clay == 0 && $grain >= 1 && $sheep >= 1){
+            excess = $is.findExcess($wood, $clay, $grain, $sheep, $rock, BuildingTypes.HOUSE, ResourceTypes.CLAY);
+            wanted = ResourceTypes.CLAY;
+
+            System.out.println("OFFER" + excess);
+            System.out.println("FOR CLAY");
+        }
+        else if($wood == 0 && $clay >= 1 && $grain >= 1 && $sheep >= 1){
+            excess = $is.findExcess($wood, $clay, $grain, $sheep, $rock, BuildingTypes.HOUSE, ResourceTypes.WOOD);
+            wanted = ResourceTypes.WOOD;
+
+            System.out.println("OFFER" + excess);
+            System.out.println("FOR WOOD");
+        }
+        else if($rock >= 3 && $grain <= 1){
+            excess = $is.findExcess($wood, $clay, $grain, $sheep, $rock, BuildingTypes.HOTEL, ResourceTypes.GRAIN);
+            wanted = ResourceTypes.GRAIN;
+
+            System.out.println("OFFER" + excess);
+            System.out.println("FOR GRAIN");
+        }
+        else if($rock <= 2 && $grain >= 2){
+            excess = $is.findExcess($wood, $clay, $grain, $sheep, $rock, BuildingTypes.HOTEL, ResourceTypes.ROCK);
+            wanted = ResourceTypes.ROCK;
+
+            System.out.println("OFFER" + excess);
+            System.out.println("FOR ROCK");
+        }
+        if(excess.size() >= 1 && wanted != null){
+            offer.put(excess.get(0), 1);
+            receive.put(wanted, 1);
+            $offer.setOffer(offer);
+            $offer.setReceive(receive);
+            insert($offer);
+            $m.addMove(MoveTypes.OFFER_TRADE_WITH_PLAYER);
+            //update($offer);
+            update($m);
+        }
+end
+
+rule "Trade accepted"
+    no-loop
+    salience 500
+    when
+        $is: InputState()
+        $m: Move( trade.getAcceptedTrade().size() > 0 && moveList.get(moveList.size()-1) == MoveTypes.OFFER_TRADE_WITH_PLAYER )
+
+    then
+        System.out.println($m.trade.getAcceptedTrade().get(0) + " Accepted the trade");
+        Map.Entry<ResourceTypes,Integer> entry = $m.trade.getTradeOffer().getReceive().entrySet().iterator().next();
+        ResourceTypes key = entry.getKey();
+        Integer value = entry.getValue();
+        $is.getResources().add(key);
+
+        entry = $m.trade.getTradeOffer().getOffer().entrySet().iterator().next();
+        key = entry.getKey();
+        value = entry.getValue();
+        $is.getResources().remove(key);
+        //$m.moveList = new ArrayList<>();
+        $m.addMove(MoveTypes.EXECUTE_TRADE);
+        update($is);
+        update($m);
+end
+
+rule "End turn"
+    salience -1500
+    no-loop
+    when
+        $is: InputState()
+        $m: Move( moveList.get(moveList.size()-1) != MoveTypes.OFFER_TRADE_WITH_PLAYER )
+    then
+        $m.addMove(MoveTypes.END_TURN);
+        update($m);
+end

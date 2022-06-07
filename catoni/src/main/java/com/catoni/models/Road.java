@@ -1,5 +1,8 @@
 package com.catoni.models;
+import com.catoni.models.dto.RoadDto;
 import com.catoni.models.enums.Status;
+
+import java.util.Objects;
 
 // class Road
     /*
@@ -48,7 +51,7 @@ public class Road {
     @Override
     public String toString() {
         return "Road{" +
-                ", row1=" + row1 +
+                "row1=" + row1 +
                 ", col1=" + col1 +
                 ", row2=" + row2 +
                 ", col2=" + col2 +
@@ -119,5 +122,37 @@ public class Road {
 
     public void setCol2(int col2) {
         this.col2 = col2;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Road road = (Road) o;
+        return row1 == road.row1 && col1 == road.col1 && row2 == road.row2 && col2 == road.col2;
+    }
+
+    public boolean equalsDto(RoadDto r){
+        return row1 == r.getRow1() && row2 == r.getRow2() && col1 == r.getCol1() && col2 == r.getCol2();
+    }
+
+    public boolean continues(Road r){
+        if(r.getBuilding1().equals(building1) && !r.getBuilding2().equals(building2) && status == Status.FREE){
+            return true;
+        }
+        else if(r.getBuilding2().equals(building1) && !r.getBuilding1().equals(building2) && status == Status.FREE){
+            return true;
+        }
+        else if(r.getBuilding1().equals(building2) && !r.getBuilding2().equals(building1) && status == Status.FREE){
+            return true;
+        }
+        else if(r.getBuilding2().equals(building2) && !r.getBuilding1().equals(building1) && status == Status.FREE){
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(row1, col1, row2, col2);
     }
 }

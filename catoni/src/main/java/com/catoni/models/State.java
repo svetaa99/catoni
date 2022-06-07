@@ -4,6 +4,8 @@ import com.catoni.constants.BotConstants;
 import com.catoni.models.enums.CrazyTypes;
 import com.catoni.models.enums.ResourceTypes;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +14,24 @@ public class State {
     private int numberOfHouses;
     private int numberOfHotels;
     private int numberOfKnights;
+    private List<ResourceTypes> resources;
     private List<CrazyTypes> craziesList;
     private Map<ResourceTypes, Double> resourceChances;
 
-    public State() {}
+    public State() {
+        numberOfRoads = 0;
+        numberOfHouses = 0;
+        numberOfHotels = 0;
+        numberOfKnights = 0;
+        resources = new ArrayList<>();
+        craziesList = new ArrayList<>();
+        resourceChances = new HashMap<>();
+        resourceChances.put(ResourceTypes.WOOD, 0.0);
+        resourceChances.put(ResourceTypes.CLAY, 0.0);
+        resourceChances.put(ResourceTypes.GRAIN, 0.0);
+        resourceChances.put(ResourceTypes.SHEEP, 0.0);
+        resourceChances.put(ResourceTypes.ROCK, 0.0);
+    }
 
     public State(int numberOfRoads, int numberOfHouses, int numberOfHotels, int numberOfKnights,
                  List<CrazyTypes> craziesList, Map<ResourceTypes, Double> resourceChances) {
@@ -109,5 +125,15 @@ public class State {
     public void setResourceChances(Map<ResourceTypes, Double> resourceChances) {
         this.resourceChances = resourceChances;
     }
+    public List<ResourceTypes> getResources() {
+        return resources;
+    }
 
+    public void setResources(List<ResourceTypes> resources) {
+        this.resources = resources;
+    }
+
+    public void addResources(List<ResourceTypes> resources){
+        this.resources.addAll(resources);
+    }
 }
