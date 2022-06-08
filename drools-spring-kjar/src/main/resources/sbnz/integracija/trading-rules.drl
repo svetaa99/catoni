@@ -65,12 +65,13 @@ rule "Offer player trade if missing resource"
         )
 
         $offer: TradeOffer() from $m.trade.getTradeOffer()
-        Number($tradeCount: intValue <= 2) from accumulate(
+
+        Number($tradeCount: intValue < 2) from accumulate(
             $o: TradeOffer( this meets[2m] $offer ),
             count($o)
         )
 
-        not(TooManyOffersEvent(cnt >= 3))
+        not(TooManyOffersEvent(cnt > 2))
         not(TradeDeclinedEvent(cnt >= 2))
     then
         System.out.println($tradeCount);
@@ -130,7 +131,16 @@ rule "Offer player trade if missing resource"
             System.out.println("FOR ROCK");
         }
         if(excess.size() >= 1 && wanted != null){
+
             offer.put(excess.get(0), 1);
+            if($tradeCount > 0 && excess.size() >= 2){
+                if(excess.get(1) == excess.get(0)){
+                    offer.replace(excess.get(0), 2);
+                }
+                else{
+                    offer.put(excess.get(1), 1);
+                }
+            }
             receive.put(wanted, 1);
             $offer.setOffer(offer);
             $offer.setReceive(receive);
@@ -150,16 +160,29 @@ rule "Trade accepted"
 
     then
         System.out.println($m.trade.getAcceptedTrade().get(0) + " Accepted the trade");
+
         Map.Entry<ResourceTypes,Integer> entry = $m.trade.getTradeOffer().getReceive().entrySet().iterator().next();
         ResourceTypes key = entry.getKey();
         Integer value = entry.getValue();
         $is.getResources().add(key);
 
-        entry = $m.trade.getTradeOffer().getOffer().entrySet().iterator().next();
-        key = entry.getKey();
-        value = entry.getValue();
-        $is.getResources().remove(key);
-        //$m.moveList = new ArrayList<>();
+        List<ResourceTypes> away = new ArrayList<>();
+
+        for(Map.Entry<ResourceTypes,Integer> entryOff: $m.trade.getTradeOffer().getOffer().entrySet()){
+            ResourceTypes keyO = entryOff.getKey();
+            Integer valueO = entryOff.getValue();
+            for(int i = 0; i < valueO; i++){
+                $is.getResources().remove(keyO);
+                System.out.println("REMOVED: " + keyO);
+                away.add(keyO);
+            }
+        }
+        State previousState = $is.getPlayerStates().get($m.trade.getAcceptedTrade().get(0));
+        previousState.addResources(away);
+        previousState.getResources().remove(key);
+        $is.getPlayerStates().replace($m.trade.getAcceptedTrade().get(0), previousState);
+        System.out.println($is.getPlayerStates().get($m.trade.getAcceptedTrade().get(0)));
+
         $m.addMove(MoveTypes.EXECUTE_TRADE);
         update($is);
         update($m);
@@ -174,6 +197,7 @@ rule "Trade declined"
     then
         int declineCount = Collections.frequency($m.moveList, MoveTypes.OFFER_TRADE_WITH_PLAYER);
         insert(new TradeDeclinedEvent(declineCount));
+        insert($m.trade.getTradeOffer());
         if(declineCount >= 2){
             $m.addMove(MoveTypes.END_TURN);
             update($m);

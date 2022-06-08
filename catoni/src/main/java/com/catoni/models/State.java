@@ -136,4 +136,13 @@ public class State {
     public void addResources(List<ResourceTypes> resources){
         this.resources.addAll(resources);
     }
+
+    @Override
+    public String toString() {
+        return "State{" +
+                "resources=" + resources +
+                ", craziesList=" + craziesList +
+                ", resourceChances=" + resourceChances +
+                '}';
+    }
 }
