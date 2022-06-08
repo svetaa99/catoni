@@ -38,4 +38,9 @@ public class MoveController {
         System.out.println(inputState.getPosition());
     }
 
+    @GetMapping(value="print-is")
+    public void print(){
+        System.out.println(inputState);
+    }
+
 }

@@ -37,5 +37,7 @@ public enum MoveTypes {
     OFFER_TRADE_WITH_BANK,
     OFFER_TRADE_WITH_PLAYER,
 
-    EXECUTE_TRADE
+    EXECUTE_TRADE,
+
+    WIN_GAME,
 }

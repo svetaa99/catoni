@@ -164,12 +164,17 @@ public class PositionController {
 
     @PostMapping(value="set-is", consumes = "application/json")
     public ResponseEntity<InputState> setInputState(@RequestBody InputState is){
-        inputState = is;
+        inputState.updateState(is);
         return new ResponseEntity<>(inputState, HttpStatus.OK);
     }
 
     @GetMapping(value="print-is")
     public void print(){
         System.out.println(inputState);
+    }
+
+    @GetMapping(value="print-position")
+    public void printPosition(){
+        System.out.println(position);
     }
 }

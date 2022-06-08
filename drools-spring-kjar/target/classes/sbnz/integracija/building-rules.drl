@@ -30,6 +30,7 @@ rule "Build House"
 
         update($is);
         update($m);
+        
 end
 
 rule "Build Hotel"
@@ -77,6 +78,8 @@ rule "Build Road"
                 resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)
             )
         $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_ROAD) )
+
+        $gs: GlobalState()
     then
         System.out.println("Building road");
         $m.addMove(MoveTypes.BUILD_ROAD);
@@ -90,6 +93,9 @@ rule "Build Road"
 
         update($is);
         update($m);
+
+        System.out.println("Global state: " + $gs);
+
 end
 
 rule "Buy Crazy if you have a lot rocks and grains"
