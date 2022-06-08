@@ -25,7 +25,7 @@ end
 
 declare TradeDeclinedEvent
     @role(event)
-    seconds: Integer
+    cnt: Integer
 end
 
 rule "Offer player trade if missing resource"
@@ -69,10 +69,12 @@ rule "Offer player trade if missing resource"
             $o: TradeOffer( this meets[2m] $offer ),
             count($o)
         )
+
         not(TooManyOffersEvent(cnt >= 3))
+        not(TradeDeclinedEvent(cnt >= 2))
     then
         System.out.println($tradeCount);
-        if($tradeCount > 2){
+        if($tradeCount >= 2){
             insert(new TooManyOffersEvent(3));
             $m.addMove(MoveTypes.END_TURN);
             update($m);
@@ -163,12 +165,29 @@ rule "Trade accepted"
         update($m);
 end
 
+rule "Trade declined"
+    lock-on-active true
+    salience 499
+    when
+        $is: InputState()
+        $m: Move(moveList.get(moveList.size()-1) == MoveTypes.OFFER_TRADE_WITH_PLAYER && trade.getStatus() == TradeStatus.DECLINED)
+    then
+        int declineCount = Collections.frequency($m.moveList, MoveTypes.OFFER_TRADE_WITH_PLAYER);
+        insert(new TradeDeclinedEvent(declineCount));
+        if(declineCount >= 2){
+            $m.addMove(MoveTypes.END_TURN);
+            update($m);
+        }
+        System.out.println("Trejd odbijen");
+
+end
+
 rule "End turn"
     salience -1500
     no-loop
     when
         $is: InputState()
-        $m: Move( moveList.get(moveList.size()-1) != MoveTypes.OFFER_TRADE_WITH_PLAYER )
+        $m: Move( moveList.get(moveList.size()-1) != MoveTypes.OFFER_TRADE_WITH_PLAYER && moveList.get(moveList.size()-1) != MoveTypes.END_TURN)
     then
         $m.addMove(MoveTypes.END_TURN);
         update($m);

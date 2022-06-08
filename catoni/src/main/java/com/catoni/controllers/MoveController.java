@@ -26,12 +26,11 @@ public class MoveController {
         return move;
     }
 
-    @PostMapping(value = "/accept", produces = "application/json")
+    @PostMapping(value = "/answer", produces = "application/json")
     public ResponseEntity<Move> answerTrade(@RequestBody Trade trade){
         Move move = moveService.getMove(inputState, trade);
         return new ResponseEntity<>(move, HttpStatus.CREATED);
     }
-
 
     //TESTING METHODS
     @GetMapping(value="/check-position")
