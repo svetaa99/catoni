@@ -124,8 +124,8 @@ public class PositionController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value="starting-house", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<StartSelectionDto> getStartingHouse(@RequestBody InputState inputState){
+    @GetMapping(value="starting-house", produces = "application/json")
+    public ResponseEntity<StartSelectionDto> getStartingHouse(){
 //        System.out.println("PRE");
 //
 //        System.out.println(position);

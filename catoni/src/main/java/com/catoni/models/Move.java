@@ -28,6 +28,10 @@ public class Move {
         this.buildings.add(b);
     }
 
+    public void addRoad(Road r) {
+        this.roads.add(r);
+    }
+
     public Move(List<ResourceTypes> objects) {
         this.objects = objects;
     }
