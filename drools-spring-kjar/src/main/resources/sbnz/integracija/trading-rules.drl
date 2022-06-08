@@ -165,6 +165,7 @@ end
 
 rule "End turn"
     salience -1500
+    lock-on-active true
     no-loop
     when
         $is: InputState()
