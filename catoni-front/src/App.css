@@ -11,6 +11,9 @@
   display: inline-block;
   font-size: 24px;
 }
+.hidden{
+  display: none;
+}
 .endTurn {
   cursor: pointer;
   margin-top: 140px;
@@ -945,70 +948,70 @@
   left: 160px;
 }
 
-.btn-1 {
+.btn-01 {
   top: 120px;
   left: 287px;
 }
 
-.btn-2 {
+.btn-03 {
   top: 120px;
   left: 399px;
 }
 
-.btn-3 {
+.btn-05 {
   top: 120px;
   left: 507px;
 }
 
 /* row 2 */
-.btn-4 {
+.btn-00 {
   top: 150px;
   left: 240px;
 }
 
-.btn-5 {
+.btn-02 {
   top: 150px;
   left: 343px;
 }
 
-.btn-6 {
+.btn-04 {
   top: 150px;
   left: 453px;
 }
 
-.btn-7 {
+.btn-06 {
   top: 150px;
   left: 564px;
 }
 
 /* row 3 */
-.btn-8 {
+.btn-11 {
   top: 210px;
   left: 235px;
 }
 
-.btn-9 {
+.btn-13 {
   top: 210px;
   left: 343px;
 }
 
-.btn-10 {
+.btn-15 {
   top: 210px;
   left: 453px;
 }
 
-.btn-11 {
+.btn-17 {
   top: 210px;
   left: 564px;
 }
 
 /* row 4 */
-.btn-12 {
+.btn-10 {
   top: 240px;
   left: 185px;
 }
 
-.btn-13 {
+.btn-12 {
   top: 240px;
   left: 287px;
 }
@@ -1018,49 +1021,49 @@
   left: 399px;
 }
 
-.btn-15 {
+.btn-16 {
   top: 240px;
   left: 507px;
 }
 
-.btn-16 {
+.btn-18 {
   top: 240px;
   left: 610px;
 }
 
 /* row 5 */
-.btn-17 {
+.btn-21 {
   top: 303px;
   left: 185px;
 }
 
-.btn-18 {
+.btn-23 {
   top: 300px;
   left: 287px;
 }
 
-.btn-19 {
+.btn-25 {
   top: 300px;
   left: 399px;
 }
 
-.btn-20 {
+.btn-27 {
   top: 300px;
   left: 507px;
 }
 
-.btn-21 {
+.btn-29 {
   top: 300px;
   left: 610px;
 }
 
 /* row 6 */
-.btn-22 {
+.btn-20 {
   top: 335px;
   left: 130px;
 }
 
-.btn-23 {
+.btn-22 {
   top: 335px;
   left: 233px;
 }
@@ -1070,64 +1073,64 @@
   left: 343px;
 }
 
-.btn-25 {
+.btn-26 {
   top: 335px;
   left: 453px;
 }
 
-.btn-26 {
+.btn-28 {
   top: 335px;
   left: 564px;
 }
 
-.btn-27 {
+.btn-210 {
   top: 335px;
   left: 665px;
 }
 
 /* row 7 */
-.btn-28 {
+.btn-30 {
   top: 395px;
   left: 130px;
 }
 
-.btn-29 {
+.btn-32 {
   top: 395px;
   left: 233px;
 }
 
-.btn-30 {
+.btn-34 {
   top: 395px;
   left: 343px;
 }
 
-.btn-31 {
+.btn-36 {
   top: 395px;
   left: 453px;
 }
 
-.btn-32 {
+.btn-38 {
   top: 395px;
   left: 564px;
 }
 
-.btn-33 {
+.btn-310 {
   top: 395px;
   left: 665px;
 }
 
 /* row 8 */
-.btn-34 {
+.btn-31 {
   top: 423px;
   left: 185px;
 }
 
-.btn-35 {
+.btn-33 {
   top: 423px;
   left: 287px;
 }
 
-.btn-36 {
+.btn-35 {
   top: 423px;
   left: 399px;
 }
@@ -1137,49 +1140,49 @@
   left: 507px;
 }
 
-.btn-38 {
+.btn-39 {
   top: 423px;
   left: 610px;
 }
 
 /* row 9 */
-.btn-39 {
+.btn-40 {
   top: 490px;
   left: 185px;
 }
 
-.btn-40 {
+.btn-42 {
   top: 490px;
   left: 287px;
 }
 
-.btn-41 {
+.btn-44 {
   top: 490px;
   left: 399px;
 }
 
-.btn-42 {
+.btn-46 {
   top: 490px;
   left: 507px;
 }
 
-.btn-43 {
+.btn-48 {
   top: 490px;
   left: 610px;
 }
 
 /* row 10 */
-.btn-44 {
+.btn-41 {
   top: 520px;
   left: 235px;
 }
 
-.btn-45 {
+.btn-43 {
   top: 520px;
   left: 343px;
 }
 
-.btn-46 {
+.btn-45 {
   top: 520px;
   left: 453px;
 }
@@ -1191,29 +1194,29 @@
 
 /* row 11 */
 
-.btn-48 {
+.btn-50 {
   top: 580px;
   left: 235px;
 }
 
-.btn-49 {
+.btn-52 {
   top: 580px;
   left: 343px;
 }
 
-.btn-50 {
+.btn-54 {
   top: 580px;
   left: 453px;
 }
 
-.btn-51 {
+.btn-56 {
   top: 580px;
   left: 564px;
 }
 
 /* row 12 */
 
-.btn-52 {
+.btn-51 {
   top: 610px;
   left: 287px;
 }
@@ -1223,7 +1226,7 @@
   left: 399px;
 }
 
-.btn-54 {
+.btn-55 {
   top: 610px;
   left: 507px;
 }

@@ -17,11 +17,22 @@ function App() {
 
   const [moveCounter, setMoveCounter] = useState(1);
 
+  function startGame(){
+    getStartingPosition((response) => {
+      console.log(response.data);
+      var idStr = response.data.building.row+""+response.data.building.col;
+      document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
+      setPlayerToMove(playerToMove + 1);
+    });
+  }
+
   function addBuilding(row, col, btnId){
     buildHouse({row, col, playerName: players[playerToMove], type: 1}, (response) => {
       //proveri da li je kuca ili hotel pa povecaj dugme
-      console.log(playerToMove + " BUILT ON POSITION : " + btnId);
-      document.querySelector(`.btn-${btnId}`).classList.add("btn", `btn-${btnId}`, `kuca-${playerToMove}`);
+      console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
+      var idStr = row+""+col;
+      console.log("FARBAJ NA: " + idStr);
+      document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
     });//catch
   }
 
@@ -54,25 +65,37 @@ function App() {
     const dice2 = random()
     console.log(dice1+dice2);
   }
+
+  function nextToMove(current){
+    if(current + 1 > players.length - 1){
+      setMoveCounter(moveCounter + 1);
+      return 0;
+    }
+    return current + 1;
+  }
+
   function endTurn(e){
     e.preventDefault();
-    let x = 0;
-    if(playerToMove + 1 > players.length - 1){
-      setPlayerToMove(0);
-      setMoveCounter(moveCounter++);
-    }
-    else{
-      x = playerToMove + 1
-      setPlayerToMove(playerToMove + 1);
-    }
-    //if players[playerToMove+1] axios/getmove
-    Swal.fire({title:`${players[x]} is on the move!` ,timer: 800}).then(()=>{
+    var x = nextToMove(playerToMove);
+    Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000}).then(()=>{
       if(players[x] == "bot" && moveCounter <= 2){
         getStartingPosition((response) => {
           console.log(response.data);
+            let idStr = response.data.building.row + "" + response.data.building.col
+            document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${x}`);
+            //dodaj i put
+            x = nextToMove(playerToMove + 1);
+            setPlayerToMove(x);
+            Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000})
+            return;
         });
       }
+      else{
+        setPlayerToMove(x);
+      }
     });
+    //if players[playerToMove+1] axios/getmove IZNAD SETOVANJA KO JE NA POTEZU IZVUCES TU INFO I ODRADIS SVE OVO AKO JE BOT SAMO STAVIS NA JOS JEDNOG ISPRED I TJT
+    
   }
 
   useEffect(() => {
@@ -102,12 +125,7 @@ function App() {
                 initState(numOfPlayers, (response) => {
                   setInputState(response.data);
                 });
-                initChances((response) => {
-                  if(players[0] == "bot")
-                    getStartingPosition((response) => {
-                      console.log(response.data);
-                    })
-                });
+                initChances();
               }
             })
         }
@@ -120,65 +138,65 @@ function App() {
 
     </div>
     <div className="board">
-      <button className="btn btn-4" value={{row: 0, column: 0, type: 0}} onClick={() => addBuilding(0, 0, 4)}></button>
-      <button className="btn btn-1" value={{row: 0, column: 1, type: 0}} onClick={() => addBuilding(0, 1, 1)}></button>
-      <button className="btn btn-5" value={{row: 0, column: 2, type: 0}} onClick={() => addBuilding(0, 2, 5)}></button>
-      <button className="btn btn-2" value={{row: 0, column: 3, type: 0}} onClick={() => addBuilding(0, 3, 2)}></button>
-      <button className="btn btn-6" value={{row: 0, column: 4, type: 0}} onClick={() => addBuilding(0, 4, 6)}></button>
-      <button className="btn btn-3" value={{row: 0, column: 5, type: 0}} onClick={() => addBuilding(0, 5, 3)}></button>
-      <button className="btn btn-7" value={{row: 0, column: 6, type: 0}} onClick={() => addBuilding(0, 6, 7)}></button>
+      <button className="btn btn-00" value={{row: 0, column: 0, type: 0}} onClick={() => addBuilding(0, 0, 4)}></button>
+      <button className="btn btn-01" value={{row: 0, column: 1, type: 0}} onClick={() => addBuilding(0, 1, 1)}></button>
+      <button className="btn btn-02" value={{row: 0, column: 2, type: 0}} onClick={() => addBuilding(0, 2, 5)}></button>
+      <button className="btn btn-03" value={{row: 0, column: 3, type: 0}} onClick={() => addBuilding(0, 3, 2)}></button>
+      <button className="btn btn-04" value={{row: 0, column: 4, type: 0}} onClick={() => addBuilding(0, 4, 6)}></button>
+      <button className="btn btn-05" value={{row: 0, column: 5, type: 0}} onClick={() => addBuilding(0, 5, 3)}></button>
+      <button className="btn btn-06" value={{row: 0, column: 6, type: 0}} onClick={() => addBuilding(0, 6, 7)}></button>
 
-      <button className="btn btn-12" value={{row: 1, column: 0, type: 0}} onClick={() => addBuilding(1, 0, 12)}></button>
-      <button className="btn btn-8" value={{row: 1, column: 1, type: 0}} onClick={() => addBuilding(1, 1, 8)}></button>
-      <button className="btn btn-13" value={{row: 1, column: 2, type: 0}} onClick={() => addBuilding(1, 2, 13)}></button>
-      <button className="btn btn-9" value={{row: 1, column: 3, type: 0}} onClick={() => addBuilding(1, 3, 9)}></button>
+      <button className="btn btn-10" value={{row: 1, column: 0, type: 0}} onClick={() => addBuilding(1, 0, 12)}></button>
+      <button className="btn btn-11" value={{row: 1, column: 1, type: 0}} onClick={() => addBuilding(1, 1, 8)}></button>
+      <button className="btn btn-12" value={{row: 1, column: 2, type: 0}} onClick={() => addBuilding(1, 2, 13)}></button>
+      <button className="btn btn-13" value={{row: 1, column: 3, type: 0}} onClick={() => addBuilding(1, 3, 9)}></button>
       <button className="btn btn-14" value={{row: 1, column: 4, type: 0}} onClick={() => addBuilding(1, 4, 14)}></button>
-      <button className="btn btn-10" value={{row: 1, column: 5, type: 0}} onClick={() => addBuilding(1, 5, 10)}></button>
-      <button className="btn btn-15" value={{row: 1, column: 6, type: 0}} onClick={() => addBuilding(1, 6, 15)}></button>
-      <button className="btn btn-11" value={{row: 1, column: 7, type: 0}} onClick={() => addBuilding(1, 7, 11)}></button>
-      <button className="btn btn-16" value={{row: 1, column: 8, type: 0}} onClick={() => addBuilding(1, 8, 16)}></button>
+      <button className="btn btn-15" value={{row: 1, column: 5, type: 0}} onClick={() => addBuilding(1, 5, 10)}></button>
+      <button className="btn btn-16" value={{row: 1, column: 6, type: 0}} onClick={() => addBuilding(1, 6, 15)}></button>
+      <button className="btn btn-17" value={{row: 1, column: 7, type: 0}} onClick={() => addBuilding(1, 7, 11)}></button>
+      <button className="btn btn-18" value={{row: 1, column: 8, type: 0}} onClick={() => addBuilding(1, 8, 16)}></button>
 
-      <button className="btn btn-22" value={{row: 2, column: 0, type: 0}} onClick={() => addBuilding(2, 0, 22)}></button>
-      <button className="btn btn-17" value={{row: 2, column: 1, type: 0}} onClick={() => addBuilding(2, 1, 17)}></button>
-      <button className="btn btn-23" value={{row: 2, column: 2, type: 0}} onClick={() => addBuilding(2, 2, 23)}></button>
-      <button className="btn btn-18" value={{row: 2, column: 3, type: 0}} onClick={() => addBuilding(2, 3, 18)}></button>
+      <button className="btn btn-20" value={{row: 2, column: 0, type: 0}} onClick={() => addBuilding(2, 0, 22)}></button>
+      <button className="btn btn-21" value={{row: 2, column: 1, type: 0}} onClick={() => addBuilding(2, 1, 17)}></button>
+      <button className="btn btn-22" value={{row: 2, column: 2, type: 0}} onClick={() => addBuilding(2, 2, 23)}></button>
+      <button className="btn btn-23" value={{row: 2, column: 3, type: 0}} onClick={() => addBuilding(2, 3, 18)}></button>
       <button className="btn btn-24" value={{row: 2, column: 4, type: 0}} onClick={() => addBuilding(2, 4, 24)}></button>
-      <button className="btn btn-19" value={{row: 2, column: 5, type: 0}} onClick={() => addBuilding(2, 5, 19)}></button>
-      <button className="btn btn-25" value={{row: 2, column: 6, type: 0}} onClick={() => addBuilding(2, 6, 25)}></button>
-      <button className="btn btn-20" value={{row: 2, column: 7, type: 0}} onClick={() => addBuilding(2, 7, 20)}></button>
-      <button className="btn btn-26" value={{row: 2, column: 8, type: 0}} onClick={() => addBuilding(2, 8, 26)}></button>
-      <button className="btn btn-21" value={{row: 2, column: 9, type: 0}} onClick={() => addBuilding(2, 9, 21)}></button>
-      <button className="btn btn-27" value={{row: 2, column: 10, type: 0}} onClick={() => addBuilding(2, 10, 27)}></button>
+      <button className="btn btn-25" value={{row: 2, column: 5, type: 0}} onClick={() => addBuilding(2, 5, 19)}></button>
+      <button className="btn btn-26" value={{row: 2, column: 6, type: 0}} onClick={() => addBuilding(2, 6, 25)}></button>
+      <button className="btn btn-27" value={{row: 2, column: 7, type: 0}} onClick={() => addBuilding(2, 7, 20)}></button>
+      <button className="btn btn-28" value={{row: 2, column: 8, type: 0}} onClick={() => addBuilding(2, 8, 26)}></button>
+      <button className="btn btn-29" value={{row: 2, column: 9, type: 0}} onClick={() => addBuilding(2, 9, 21)}></button>
+      <button className="btn btn-210" value={{row: 2, column: 10, type: 0}} onClick={() => addBuilding(2, 10, 27)}></button>
 
-      <button className="btn btn-28" value={{row: 3, column: 0, type: 0}} onClick={() => addBuilding(3, 0, 28)}></button>
-      <button className="btn btn-34" value={{row: 3, column: 1, type: 0}} onClick={() => addBuilding(3, 1, 34)}></button>
-      <button className="btn btn-29" value={{row: 3, column: 2, type: 0}} onClick={() => addBuilding(3, 2, 29)}></button>
-      <button className="btn btn-35" value={{row: 3, column: 3, type: 0}} onClick={() => addBuilding(3, 3, 35)}></button>
-      <button className="btn btn-30" value={{row: 3, column: 4, type: 0}} onClick={() => addBuilding(3, 4, 30)}></button>
-      <button className="btn btn-36" value={{row: 3, column: 5, type: 0}} onClick={() => addBuilding(3, 5, 36)}></button>
-      <button className="btn btn-31" value={{row: 3, column: 6, type: 0}} onClick={() => addBuilding(3, 6, 31)}></button>
+      <button className="btn btn-30" value={{row: 3, column: 0, type: 0}} onClick={() => addBuilding(3, 0, 28)}></button>
+      <button className="btn btn-31" value={{row: 3, column: 1, type: 0}} onClick={() => addBuilding(3, 1, 34)}></button>
+      <button className="btn btn-32" value={{row: 3, column: 2, type: 0}} onClick={() => addBuilding(3, 2, 29)}></button>
+      <button className="btn btn-33" value={{row: 3, column: 3, type: 0}} onClick={() => addBuilding(3, 3, 35)}></button>
+      <button className="btn btn-34" value={{row: 3, column: 4, type: 0}} onClick={() => addBuilding(3, 4, 30)}></button>
+      <button className="btn btn-35" value={{row: 3, column: 5, type: 0}} onClick={() => addBuilding(3, 5, 36)}></button>
+      <button className="btn btn-36" value={{row: 3, column: 6, type: 0}} onClick={() => addBuilding(3, 6, 31)}></button>
       <button className="btn btn-37" value={{row: 3, column: 7, type: 0}} onClick={() => addBuilding(3, 7, 37)}></button>
-      <button className="btn btn-32" value={{row: 3, column: 8, type: 0}} onClick={() => addBuilding(3, 8, 32)}></button>
-      <button className="btn btn-38" value={{row: 3, column: 9, type: 0}} onClick={() => addBuilding(3, 9, 38)}></button>
-      <button className="btn btn-33" value={{row: 3, column: 10, type: 0}} onClick={() => addBuilding(3, 10, 33)}></button>
+      <button className="btn btn-38" value={{row: 3, column: 8, type: 0}} onClick={() => addBuilding(3, 8, 32)}></button>
+      <button className="btn btn-39" value={{row: 3, column: 9, type: 0}} onClick={() => addBuilding(3, 9, 38)}></button>
+      <button className="btn btn-310" value={{row: 3, column: 10, type: 0}} onClick={() => addBuilding(3, 10, 33)}></button>
 
-      <button className="btn btn-39" value={{row: 4, column: 0, type: 0}} onClick={() => addBuilding(4, 0, 39)}></button>
-      <button className="btn btn-44" value={{row: 4, column: 1, type: 0}} onClick={() => addBuilding(4, 1, 44)}></button>
-      <button className="btn btn-40" value={{row: 4, column: 2, type: 0}} onClick={() => addBuilding(4, 2, 40)}></button>
-      <button className="btn btn-45" value={{row: 4, column: 3, type: 0}} onClick={() => addBuilding(4, 3, 45)}></button>
-      <button className="btn btn-41" value={{row: 4, column: 4, type: 0}} onClick={() => addBuilding(4, 4, 41)}></button>
-      <button className="btn btn-46" value={{row: 4, column: 5, type: 0}} onClick={() => addBuilding(4, 5, 46)}></button>
-      <button className="btn btn-42" value={{row: 4, column: 6, type: 0}} onClick={() => addBuilding(4, 6, 42)}></button>
+      <button className="btn btn-40" value={{row: 4, column: 0, type: 0}} onClick={() => addBuilding(4, 0, 39)}></button>
+      <button className="btn btn-41" value={{row: 4, column: 1, type: 0}} onClick={() => addBuilding(4, 1, 44)}></button>
+      <button className="btn btn-42" value={{row: 4, column: 2, type: 0}} onClick={() => addBuilding(4, 2, 40)}></button>
+      <button className="btn btn-43" value={{row: 4, column: 3, type: 0}} onClick={() => addBuilding(4, 3, 43)}></button>
+      <button className="btn btn-44" value={{row: 4, column: 4, type: 0}} onClick={() => addBuilding(4, 4, 41)}></button>
+      <button className="btn btn-45" value={{row: 4, column: 5, type: 0}} onClick={() => addBuilding(4, 5, 46)}></button>
+      <button className="btn btn-46" value={{row: 4, column: 6, type: 0}} onClick={() => addBuilding(4, 6, 42)}></button>
       <button className="btn btn-47" value={{row: 4, column: 7, type: 0}} onClick={() => addBuilding(4, 7, 47)}></button>
-      <button className="btn btn-43" value={{row: 4, column: 8, type: 0}} onClick={() => addBuilding(4, 8, 43)}></button>
+      <button className="btn btn-48" value={{row: 4, column: 8, type: 0}} onClick={() => addBuilding(4, 8, 43)}></button>
 
-      <button className="btn btn-48" value={{row: 5, column: 0, type: 0}} onClick={() => addBuilding(5, 0, 48)}></button>
-      <button className="btn btn-52" value={{row: 5, column: 1, type: 0}} onClick={() => addBuilding(5, 1, 52)}></button>
-      <button className="btn btn-49" value={{row: 5, column: 2, type: 0}} onClick={() => addBuilding(5, 2, 49)}></button>
+      <button className="btn btn-50" value={{row: 5, column: 0, type: 0}} onClick={() => addBuilding(5, 0, 48)}></button>
+      <button className="btn btn-51" value={{row: 5, column: 1, type: 0}} onClick={() => addBuilding(5, 1, 52)}></button>
+      <button className="btn btn-52" value={{row: 5, column: 2, type: 0}} onClick={() => addBuilding(5, 2, 49)}></button>
       <button className="btn btn-53" value={{row: 5, column: 3, type: 0}} onClick={() => addBuilding(5, 3, 53)}></button>
-      <button className="btn btn-50" value={{row: 5, column: 4, type: 0}} onClick={() => addBuilding(5, 4, 50)}></button>
-      <button className="btn btn-54" value={{row: 5, column: 5, type: 0}} onClick={() => addBuilding(5, 5, 54)}></button>
-      <button className="btn btn-51" value={{row: 5, column: 6, type: 0}} onClick={() => addBuilding(5, 6, 51)}></button>
+      <button className="btn btn-54" value={{row: 5, column: 4, type: 0}} onClick={() => addBuilding(5, 4, 50)}></button>
+      <button className="btn btn-55" value={{row: 5, column: 5, type: 0}} onClick={() => addBuilding(5, 5, 54)}></button>
+      <button className="btn btn-56" value={{row: 5, column: 6, type: 0}} onClick={() => addBuilding(5, 6, 51)}></button>
 
       <button className="road road-1" value={{row1: 0, col1: 0, row2: 1, col2: 1}} onClick={() => addRoad(0, 0, 1, 1, 1)}></button>
       <button className="road road-2" value={{row1: 0, col1: 0, row2: 0, col2: 1}} onClick={() => addRoad(0, 0, 0, 1, 2)}></button>
@@ -359,6 +377,7 @@ function App() {
     </div>
     <div className="bottom">
       {/* end turn build house build road build hotel play crazy */}
+      <button className={players[0] == "bot" ? 'dice' : 'hidden'} onClick={startGame}>START GAME</button>
       <button className='dice' onClick={rollDice}>Roll dice</button>
       <button className='endTurn' onClick={endTurn}>End turn</button>
     </div>
