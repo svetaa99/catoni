@@ -22,7 +22,10 @@ function App() {
       console.log(response.data);
       var idStr = response.data.building.row+""+response.data.building.col;
       document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
-      setPlayerToMove(playerToMove + 1);
+      var rIdStr = response.data.road.row1+""+response.data.road.col1+""+response.data.road.row2+""+response.data.road.col2;
+      document.querySelector(`.road-${rIdStr}`).classList.add("road", `road-${rIdStr}`, `put-${playerToMove}`);
+      setPlayerToMove(nextToMove(playerToMove));
+      Swal.fire({title:`${players[playerToMove + 1]} is on the move!` ,timer: 1000})
     });
   }
 
@@ -33,11 +36,15 @@ function App() {
       var idStr = row+""+col;
       console.log("FARBAJ NA: " + idStr);
       document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
+      var selected = document.querySelector(`.btn-${idStr}`)
+      if(response.data.type == 2)
+        selected.textContent = "H";
     });//catch
   }
 
-  function addRoad(row1, col1, row2, col2, roadId){
+  function addRoad(row1, col1, row2, col2){
     buildRoad({row1, col1, row2, col2, player: players[playerToMove]}, (response) => {
+      var roadId = row1+""+col1+""+row2+""+col2;
       console.log(playerToMove + " BUILT A ROAD : " + roadId);
       document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${playerToMove}`);
     });//catch
@@ -78,13 +85,16 @@ function App() {
     e.preventDefault();
     var x = nextToMove(playerToMove);
     Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000}).then(()=>{
-      if(players[x] == "bot" && moveCounter <= 2){
+      var y = players[0] == "bot" ? moveCounter+1: moveCounter;
+      if(players[x] == "bot" && y <= 2){
+        console.log("Potez: " + moveCounter);
         getStartingPosition((response) => {
-          console.log(response.data);
+            console.log(response.data);
             let idStr = response.data.building.row + "" + response.data.building.col
             document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${x}`);
-            //dodaj i put
-            x = nextToMove(playerToMove + 1);
+            var rIdStr = response.data.road.row1+""+response.data.road.col1+""+response.data.road.row2+""+response.data.road.col2;
+            document.querySelector(`.road-${rIdStr}`).classList.add("road", `road-${rIdStr}`, `put-${x}`);
+            x = nextToMove(x);
             setPlayerToMove(x);
             Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000})
             return;
@@ -94,8 +104,6 @@ function App() {
         setPlayerToMove(x);
       }
     });
-    //if players[playerToMove+1] axios/getmove IZNAD SETOVANJA KO JE NA POTEZU IZVUCES TU INFO I ODRADIS SVE OVO AKO JE BOT SAMO STAVIS NA JOS JEDNOG ISPRED I TJT
-    
   }
 
   useEffect(() => {
@@ -198,83 +206,83 @@ function App() {
       <button className="btn btn-55" value={{row: 5, column: 5, type: 0}} onClick={() => addBuilding(5, 5, 54)}></button>
       <button className="btn btn-56" value={{row: 5, column: 6, type: 0}} onClick={() => addBuilding(5, 6, 51)}></button>
 
-      <button className="road road-1" value={{row1: 0, col1: 0, row2: 1, col2: 1}} onClick={() => addRoad(0, 0, 1, 1, 1)}></button>
-      <button className="road road-2" value={{row1: 0, col1: 0, row2: 0, col2: 1}} onClick={() => addRoad(0, 0, 0, 1, 2)}></button>
-      <button className="road road-3" value={{row1: 0, col1: 1, row2: 0, col2: 2}} onClick={() => addRoad(0, 1, 0, 2, 3)}></button>
-      <button className="road road-4" value={{row1: 0, col1: 2, row2: 0, col2: 3}} onClick={() => addRoad(0, 2, 0, 3, 4)}></button>
-      <button className="road road-5" value={{row1: 0, col1: 3, row2: 0, col2: 4}} onClick={() => addRoad(0, 3, 0, 4, 5)}></button>
-      <button className="road road-6" value={{row1: 0, col1: 4, row2: 0, col2: 5}} onClick={() => addRoad(0, 4, 0, 5, 6)}></button>
-      <button className="road road-7" value={{row1: 0, col1: 5, row2: 0, col2: 6}} onClick={() => addRoad(0, 5, 0, 6, 7)}></button>
-      <button className="road road-8" value={{row1: 0, col1: 6, row2: 1, col2: 7}} onClick={() => addRoad(0, 6, 1, 7, 8)}></button>
-      <button className="road road-9" value={{row1: 1, col1: 0, row2: 1, col2: 1}} onClick={() => addRoad(1, 0, 1, 1, 9)}></button>
-      <button className="road road-10" value={{row1: 1, col1: 1, row2: 1, col2: 2}} onClick={() => addRoad(1, 1, 1, 2, 10)}></button>
-      <button className="road road-11" value={{row1: 1, col1: 2, row2: 1, col2: 3}} onClick={() => addRoad(1, 2, 1, 3, 11)}></button>
-      <button className="road road-12" value={{row1: 1, col1: 3, row2: 1, col2: 4}} onClick={() => addRoad(1, 3, 1, 4, 12)}></button>
-      <button className="road road-13" value={{row1: 1, col1: 4, row2: 1, col2: 5}} onClick={() => addRoad(1, 4, 1, 5, 13)}></button>
-      <button className="road road-14" value={{row1: 1, col1: 5, row2: 1, col2: 6}} onClick={() => addRoad(1, 5, 1, 6, 14)}></button>
-      <button className="road road-15" value={{row1: 1, col1: 6, row2: 1, col2: 7}} onClick={() => addRoad(1, 6, 1, 7, 15)}></button>
-      <button className="road road-16" value={{row1: 1, col1: 7, row2: 1, col2: 8}} onClick={() => addRoad(1, 7, 1, 8, 16)}></button>
-      <button className="road road-17" value={{row1: 2, col1: 1, row2: 2, col2: 2}} onClick={() => addRoad(2, 1, 2, 2, 17)}></button>
-      <button className="road road-18" value={{row1: 2, col1: 2, row2: 2, col2: 3}} onClick={() => addRoad(2, 2, 2, 3, 18)}></button>
-      <button className="road road-19" value={{row1: 2, col1: 3, row2: 2, col2: 4}} onClick={() => addRoad(2, 3, 2, 4, 19)}></button>
-      <button className="road road-20" value={{row1: 2, col1: 4, row2: 2, col2: 5}} onClick={() => addRoad(2, 4, 2, 5, 20)}></button>
-      <button className="road road-21" value={{row1: 2, col1: 5, row2: 2, col2: 6}} onClick={() => addRoad(2, 5, 2, 6, 21)}></button>
-      <button className="road road-22" value={{row1: 2, col1: 6, row2: 2, col2: 7}} onClick={() => addRoad(2, 6, 2, 7, 22)}></button>
-      <button className="road road-23" value={{row1: 2, col1: 7, row2: 2, col2: 8}} onClick={() => addRoad(2, 7, 2, 8, 23)}></button>
-      <button className="road road-24" value={{row1: 2, col1: 8, row2: 2, col2: 9}} onClick={() => addRoad(2, 8, 2, 9, 24)}></button>
-      <button className="road road-25" value={{row1: 2, col1: 9, row2: 2, col2: 10}} onClick={() => addRoad(2, 9, 2, 10, 25)}></button>
-      <button className="road road-26" value={{row1: 2, col1: 0, row2: 2, col2: 1}} onClick={() => addRoad(2, 0, 2, 1, 26)}></button>
-      <button className="road road-27" value={{row1: 3, col1: 0, row2: 3, col2: 1}} onClick={() => addRoad(3, 0, 3, 1, 27)}></button>
-      <button className="road road-28" value={{row1: 3, col1: 1, row2: 3, col2: 2}} onClick={() => addRoad(3, 1, 3, 2, 28)}></button>
-      <button className="road road-29" value={{row1: 3, col1: 2, row2: 3, col2: 3}} onClick={() => addRoad(3, 2, 3, 3, 29)}></button>
-      <button className="road road-30" value={{row1: 3, col1: 3, row2: 3, col2: 4}} onClick={() => addRoad(3, 3, 3, 4, 30)}></button>
-      <button className="road road-31" value={{row1: 3, col1: 4, row2: 3, col2: 5}} onClick={() => addRoad(3, 4, 3, 5, 31)}></button>
-      <button className="road road-32" value={{row1: 3, col1: 5, row2: 3, col2: 6}} onClick={() => addRoad(3, 5, 3, 6, 32)}></button>
-      <button className="road road-33" value={{row1: 3, col1: 6, row2: 3, col2: 7}} onClick={() => addRoad(3, 6, 3, 7, 33)}></button>
-      <button className="road road-34" value={{row1: 3, col1: 7, row2: 3, col2: 8}} onClick={() => addRoad(3, 7, 3, 8, 34)}></button>
-      <button className="road road-35" value={{row1: 3, col1: 8, row2: 3, col2: 9}} onClick={() => addRoad(3, 8, 3, 9, 35)}></button>
-      <button className="road road-36" value={{row1: 3, col1: 9, row2: 3, col2: 10}} onClick={() => addRoad(3, 9, 3, 10, 36)}></button>
+      <button className="road road-0011" value={{row1: 0, col1: 0, row2: 1, col2: 1}} onClick={() => addRoad(0, 0, 1, 1, 1)}></button>
+      <button className="road road-0001" value={{row1: 0, col1: 0, row2: 0, col2: 1}} onClick={() => addRoad(0, 0, 0, 1, 2)}></button>
+      <button className="road road-0102" value={{row1: 0, col1: 1, row2: 0, col2: 2}} onClick={() => addRoad(0, 1, 0, 2, 3)}></button>
+      <button className="road road-0203" value={{row1: 0, col1: 2, row2: 0, col2: 3}} onClick={() => addRoad(0, 2, 0, 3, 4)}></button>
+      <button className="road road-0304" value={{row1: 0, col1: 3, row2: 0, col2: 4}} onClick={() => addRoad(0, 3, 0, 4, 5)}></button>
+      <button className="road road-0405" value={{row1: 0, col1: 4, row2: 0, col2: 5}} onClick={() => addRoad(0, 4, 0, 5, 6)}></button>
+      <button className="road road-0506" value={{row1: 0, col1: 5, row2: 0, col2: 6}} onClick={() => addRoad(0, 5, 0, 6, 7)}></button>
+      <button className="road road-0617" value={{row1: 0, col1: 6, row2: 1, col2: 7}} onClick={() => addRoad(0, 6, 1, 7, 8)}></button>
+      <button className="road road-1011" value={{row1: 1, col1: 0, row2: 1, col2: 1}} onClick={() => addRoad(1, 0, 1, 1, 9)}></button>
+      <button className="road road-1112" value={{row1: 1, col1: 1, row2: 1, col2: 2}} onClick={() => addRoad(1, 1, 1, 2, 10)}></button>
+      <button className="road road-1213" value={{row1: 1, col1: 2, row2: 1, col2: 3}} onClick={() => addRoad(1, 2, 1, 3, 11)}></button>
+      <button className="road road-1314" value={{row1: 1, col1: 3, row2: 1, col2: 4}} onClick={() => addRoad(1, 3, 1, 4, 12)}></button>
+      <button className="road road-1415" value={{row1: 1, col1: 4, row2: 1, col2: 5}} onClick={() => addRoad(1, 4, 1, 5, 13)}></button>
+      <button className="road road-1516" value={{row1: 1, col1: 5, row2: 1, col2: 6}} onClick={() => addRoad(1, 5, 1, 6, 14)}></button>
+      <button className="road road-1617" value={{row1: 1, col1: 6, row2: 1, col2: 7}} onClick={() => addRoad(1, 6, 1, 7, 15)}></button>
+      <button className="road road-1718" value={{row1: 1, col1: 7, row2: 1, col2: 8}} onClick={() => addRoad(1, 7, 1, 8, 16)}></button>
+      <button className="road road-2122" value={{row1: 2, col1: 1, row2: 2, col2: 2}} onClick={() => addRoad(2, 1, 2, 2, 17)}></button>
+      <button className="road road-2223" value={{row1: 2, col1: 2, row2: 2, col2: 3}} onClick={() => addRoad(2, 2, 2, 3, 18)}></button>
+      <button className="road road-2324" value={{row1: 2, col1: 3, row2: 2, col2: 4}} onClick={() => addRoad(2, 3, 2, 4, 19)}></button>
+      <button className="road road-2425" value={{row1: 2, col1: 4, row2: 2, col2: 5}} onClick={() => addRoad(2, 4, 2, 5, 20)}></button>
+      <button className="road road-2526" value={{row1: 2, col1: 5, row2: 2, col2: 6}} onClick={() => addRoad(2, 5, 2, 6, 21)}></button>
+      <button className="road road-2627" value={{row1: 2, col1: 6, row2: 2, col2: 7}} onClick={() => addRoad(2, 6, 2, 7, 22)}></button>
+      <button className="road road-2728" value={{row1: 2, col1: 7, row2: 2, col2: 8}} onClick={() => addRoad(2, 7, 2, 8, 23)}></button>
+      <button className="road road-2829" value={{row1: 2, col1: 8, row2: 2, col2: 9}} onClick={() => addRoad(2, 8, 2, 9, 24)}></button>
+      <button className="road road-29210" value={{row1: 2, col1: 9, row2: 2, col2: 10}} onClick={() => addRoad(2, 9, 2, 10, 25)}></button>
+      <button className="road road-2021" value={{row1: 2, col1: 0, row2: 2, col2: 1}} onClick={() => addRoad(2, 0, 2, 1, 26)}></button>
+      <button className="road road-3031" value={{row1: 3, col1: 0, row2: 3, col2: 1}} onClick={() => addRoad(3, 0, 3, 1, 27)}></button>
+      <button className="road road-3132" value={{row1: 3, col1: 1, row2: 3, col2: 2}} onClick={() => addRoad(3, 1, 3, 2, 28)}></button>
+      <button className="road road-3233" value={{row1: 3, col1: 2, row2: 3, col2: 3}} onClick={() => addRoad(3, 2, 3, 3, 29)}></button>
+      <button className="road road-3334" value={{row1: 3, col1: 3, row2: 3, col2: 4}} onClick={() => addRoad(3, 3, 3, 4, 30)}></button>
+      <button className="road road-3435" value={{row1: 3, col1: 4, row2: 3, col2: 5}} onClick={() => addRoad(3, 4, 3, 5, 31)}></button>
+      <button className="road road-3536" value={{row1: 3, col1: 5, row2: 3, col2: 6}} onClick={() => addRoad(3, 5, 3, 6, 32)}></button>
+      <button className="road road-3637" value={{row1: 3, col1: 6, row2: 3, col2: 7}} onClick={() => addRoad(3, 6, 3, 7, 33)}></button>
+      <button className="road road-3738" value={{row1: 3, col1: 7, row2: 3, col2: 8}} onClick={() => addRoad(3, 7, 3, 8, 34)}></button>
+      <button className="road road-3839" value={{row1: 3, col1: 8, row2: 3, col2: 9}} onClick={() => addRoad(3, 8, 3, 9, 35)}></button>
+      <button className="road road-39310" value={{row1: 3, col1: 9, row2: 3, col2: 10}} onClick={() => addRoad(3, 9, 3, 10, 36)}></button>
 
-      <button className="road road-37" value={{row1: 4, col1: 0, row2: 4, col2: 1}} onClick={() => addRoad(4, 0, 4, 1, 37)}></button>
-      <button className="road road-38" value={{row1: 4, col1: 1, row2: 4, col2: 2}} onClick={() => addRoad(4, 1, 4, 2, 38)}></button>
-      <button className="road road-39" value={{row1: 4, col1: 2, row2: 4, col2: 3}} onClick={() => addRoad(4, 2, 4, 3, 39)}></button>
-      <button className="road road-40" value={{row1: 4, col1: 3, row2: 4, col2: 4}} onClick={() => addRoad(4, 3, 4, 4, 40)}></button>
-      <button className="road road-41" value={{row1: 4, col1: 4, row2: 4, col2: 5}} onClick={() => addRoad(4, 4, 4, 5, 41)}></button>
-      <button className="road road-42" value={{row1: 4, col1: 5, row2: 4, col2: 6}} onClick={() => addRoad(4, 5, 4, 6, 42)}></button>
-      <button className="road road-43" value={{row1: 4, col1: 6, row2: 4, col2: 7}} onClick={() => addRoad(4, 6, 4, 7, 43)}></button>
-      <button className="road road-44" value={{row1: 4, col1: 7, row2: 4, col2: 8}} onClick={() => addRoad(4, 7, 4, 8, 44)}></button>
+      <button className="road road-4041" value={{row1: 4, col1: 0, row2: 4, col2: 1}} onClick={() => addRoad(4, 0, 4, 1, 37)}></button>
+      <button className="road road-4142" value={{row1: 4, col1: 1, row2: 4, col2: 2}} onClick={() => addRoad(4, 1, 4, 2, 38)}></button>
+      <button className="road road-4243" value={{row1: 4, col1: 2, row2: 4, col2: 3}} onClick={() => addRoad(4, 2, 4, 3, 39)}></button>
+      <button className="road road-4344" value={{row1: 4, col1: 3, row2: 4, col2: 4}} onClick={() => addRoad(4, 3, 4, 4, 40)}></button>
+      <button className="road road-4445" value={{row1: 4, col1: 4, row2: 4, col2: 5}} onClick={() => addRoad(4, 4, 4, 5, 41)}></button>
+      <button className="road road-4546" value={{row1: 4, col1: 5, row2: 4, col2: 6}} onClick={() => addRoad(4, 5, 4, 6, 42)}></button>
+      <button className="road road-4647" value={{row1: 4, col1: 6, row2: 4, col2: 7}} onClick={() => addRoad(4, 6, 4, 7, 43)}></button>
+      <button className="road road-4748" value={{row1: 4, col1: 7, row2: 4, col2: 8}} onClick={() => addRoad(4, 7, 4, 8, 44)}></button>
 
-      <button className="road road-45" value={{row1: 5, col1: 0, row2: 5, col2: 1}} onClick={() => addRoad(5, 0, 5, 1, 45)}></button>
-      <button className="road road-46" value={{row1: 5, col1: 1, row2: 5, col2: 2}} onClick={() => addRoad(5, 1, 5, 2, 46)}></button>
-      <button className="road road-47" value={{row1: 5, col1: 2, row2: 5, col2: 3}} onClick={() => addRoad(5, 2, 5, 3, 47)}></button>
-      <button className="road road-48" value={{row1: 5, col1: 3, row2: 5, col2: 4}} onClick={() => addRoad(5, 3, 5, 4, 48)}></button>
-      <button className="road road-49" value={{row1: 5, col1: 4, row2: 5, col2: 5}} onClick={() => addRoad(5, 4, 5, 5, 49)}></button>
-      <button className="road road-50" value={{row1: 5, col1: 5, row2: 5, col2: 6}} onClick={() => addRoad(5, 5, 5, 6, 50)}></button>
+      <button className="road road-5051" value={{row1: 5, col1: 0, row2: 5, col2: 1}} onClick={() => addRoad(5, 0, 5, 1, 45)}></button>
+      <button className="road road-5152" value={{row1: 5, col1: 1, row2: 5, col2: 2}} onClick={() => addRoad(5, 1, 5, 2, 46)}></button>
+      <button className="road road-5253" value={{row1: 5, col1: 2, row2: 5, col2: 3}} onClick={() => addRoad(5, 2, 5, 3, 47)}></button>
+      <button className="road road-5354" value={{row1: 5, col1: 3, row2: 5, col2: 4}} onClick={() => addRoad(5, 3, 5, 4, 48)}></button>
+      <button className="road road-5455" value={{row1: 5, col1: 4, row2: 5, col2: 5}} onClick={() => addRoad(5, 4, 5, 5, 49)}></button>
+      <button className="road road-5556" value={{row1: 5, col1: 5, row2: 5, col2: 6}} onClick={() => addRoad(5, 5, 5, 6, 50)}></button>
 
-      <button className="road road-52" value={{row1: 0, col1: 2, row2: 1, col2: 3}} onClick={() => addRoad(0, 2, 1, 3, 52)}></button>
-      <button className="road road-53" value={{row1: 0, col1: 4, row2: 1, col2: 5}} onClick={() => addRoad(0, 4, 1, 5, 53)}></button>
-      <button className="road road-54" value={{row1: 1, col1: 0, row2: 2, col2: 1}} onClick={() => addRoad(1, 0, 2, 1, 54)}></button>
-      <button className="road road-55" value={{row1: 1, col1: 2, row2: 2, col2: 3}} onClick={() => addRoad(1, 2, 2, 3, 55)}></button>
-      <button className="road road-56" value={{row1: 1, col1: 4, row2: 2, col2: 5}} onClick={() => addRoad(1, 4, 2, 5, 56)}></button>
-      <button className="road road-57" value={{row1: 1, col1: 6, row2: 2, col2: 7}} onClick={() => addRoad(1, 6, 2, 7, 57)}></button>
-      <button className="road road-58" value={{row1: 1, col1: 8, row2: 2, col2: 9}} onClick={() => addRoad(1, 8, 2, 9, 58)}></button>
+      <button className="road road-0213" value={{row1: 0, col1: 2, row2: 1, col2: 3}} onClick={() => addRoad(0, 2, 1, 3, 52)}></button>
+      <button className="road road-0415" value={{row1: 0, col1: 4, row2: 1, col2: 5}} onClick={() => addRoad(0, 4, 1, 5, 53)}></button>
+      <button className="road road-1021" value={{row1: 1, col1: 0, row2: 2, col2: 1}} onClick={() => addRoad(1, 0, 2, 1, 54)}></button>
+      <button className="road road-1223" value={{row1: 1, col1: 2, row2: 2, col2: 3}} onClick={() => addRoad(1, 2, 2, 3, 55)}></button>
+      <button className="road road-1425" value={{row1: 1, col1: 4, row2: 2, col2: 5}} onClick={() => addRoad(1, 4, 2, 5, 56)}></button>
+      <button className="road road-1627" value={{row1: 1, col1: 6, row2: 2, col2: 7}} onClick={() => addRoad(1, 6, 2, 7, 57)}></button>
+      <button className="road road-1829" value={{row1: 1, col1: 8, row2: 2, col2: 9}} onClick={() => addRoad(1, 8, 2, 9, 58)}></button>
 
-      <button className="road road-59" value={{row1: 2, col1: 0, row2: 3, col2: 0}} onClick={() => addRoad(2, 0, 3, 0, 59)}></button>
-      <button className="road road-60" value={{row1: 2, col1: 2, row2: 3, col2: 2}} onClick={() => addRoad(2, 2, 3, 2, 60)}></button>
-      <button className="road road-61" value={{row1: 2, col1: 4, row2: 3, col2: 4}} onClick={() => addRoad(2, 4, 3, 4, 61)}></button>
-      <button className="road road-62" value={{row1: 2, col1: 6, row2: 3, col2: 6}} onClick={() => addRoad(2, 6, 3, 6, 62)}></button>
-      <button className="road road-63" value={{row1: 2, col1: 8, row2: 3, col2: 8}} onClick={() => addRoad(2, 8, 3, 8, 63)}></button>
-      <button className="road road-64" value={{row1: 2, col1: 10, row2: 3, col2: 10}} onClick={() => addRoad(2, 10, 3, 10, 64)}></button>
+      <button className="road road-2030" value={{row1: 2, col1: 0, row2: 3, col2: 0}} onClick={() => addRoad(2, 0, 3, 0, 59)}></button>
+      <button className="road road-2232" value={{row1: 2, col1: 2, row2: 3, col2: 2}} onClick={() => addRoad(2, 2, 3, 2, 60)}></button>
+      <button className="road road-2434" value={{row1: 2, col1: 4, row2: 3, col2: 4}} onClick={() => addRoad(2, 4, 3, 4, 61)}></button>
+      <button className="road road-2636" value={{row1: 2, col1: 6, row2: 3, col2: 6}} onClick={() => addRoad(2, 6, 3, 6, 62)}></button>
+      <button className="road road-2838" value={{row1: 2, col1: 8, row2: 3, col2: 8}} onClick={() => addRoad(2, 8, 3, 8, 63)}></button>
+      <button className="road road-210310" value={{row1: 2, col1: 10, row2: 3, col2: 10}} onClick={() => addRoad(2, 10, 3, 10, 64)}></button>
 
-      <button className="road road-65" value={{row1: 3, col1: 1, row2: 4, col2: 0}} onClick={() => addRoad(3, 1, 4, 0, 65)}></button>
-      <button className="road road-66" value={{row1: 3, col1: 5, row2: 4, col2: 4}} onClick={() => addRoad(3, 5, 4, 4, 66)}></button>
-      <button className="road road-67" value={{row1: 3, col1: 7, row2: 4, col2: 6}} onClick={() => addRoad(3, 7, 4, 6, 67)}></button>
-      <button className="road road-68" value={{row1: 3, col1: 9, row2: 4, col2: 8}} onClick={() => addRoad(3, 9, 4, 8, 68)}></button>
-      <button className="road road-69" value={{row1: 4, col1: 1, row2: 5, col2: 0}} onClick={() => addRoad(4, 1, 5, 0, 69)}></button>
-      <button className="road road-70" value={{row1: 4, col1: 3, row2: 5, col2: 2}} onClick={() => addRoad(4, 3, 5, 2, 70)}></button>
-      <button className="road road-71" value={{row1: 4, col1: 5, row2: 5, col2: 4}} onClick={() => addRoad(4, 5, 5, 4, 71)}></button>
-      <button className="road road-72" value={{row1: 4, col1: 7, row2: 5, col2: 6}} onClick={() => addRoad(4, 7, 5, 6, 72)}></button>
-      <button className="road road-73" value={{row1: 3, col1: 3, row2: 4, col2: 2}} onClick={() => addRoad(3, 3, 4, 2, 73)}></button>
+      <button className="road road-3140" value={{row1: 3, col1: 1, row2: 4, col2: 0}} onClick={() => addRoad(3, 1, 4, 0, 65)}></button>
+      <button className="road road-3544" value={{row1: 3, col1: 5, row2: 4, col2: 4}} onClick={() => addRoad(3, 5, 4, 4, 66)}></button>
+      <button className="road road-3746" value={{row1: 3, col1: 7, row2: 4, col2: 6}} onClick={() => addRoad(3, 7, 4, 6, 67)}></button>
+      <button className="road road-3948" value={{row1: 3, col1: 9, row2: 4, col2: 8}} onClick={() => addRoad(3, 9, 4, 8, 68)}></button>
+      <button className="road road-4150" value={{row1: 4, col1: 1, row2: 5, col2: 0}} onClick={() => addRoad(4, 1, 5, 0, 69)}></button>
+      <button className="road road-4352" value={{row1: 4, col1: 3, row2: 5, col2: 2}} onClick={() => addRoad(4, 3, 5, 2, 70)}></button>
+      <button className="road road-4554" value={{row1: 4, col1: 5, row2: 5, col2: 4}} onClick={() => addRoad(4, 5, 5, 4, 71)}></button>
+      <button className="road road-4756" value={{row1: 4, col1: 7, row2: 5, col2: 6}} onClick={() => addRoad(4, 7, 5, 6, 72)}></button>
+      <button className="road road-3342" value={{row1: 3, col1: 3, row2: 4, col2: 2}} onClick={() => addRoad(3, 3, 4, 2, 73)}></button>
 
       <div className="port port-1"></div>
       <div className="port port-2"></div>

@@ -88,7 +88,7 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: 10px;
   margin: 4px 2px;
   cursor: pointer;
   position: absolute;
@@ -115,7 +115,7 @@
 }
 
 .btn:hover {
-  background-color: #2e6e30;
+  background-color: #7a853a;
   opacity: 1;
 }
 
@@ -420,300 +420,300 @@
   position: absolute;
 }
 
-.road-1 {
+.road-0011 {
   top: 177px;
   left: 239px;
 }
 
-.road-2 {
+.road-0001 {
   transform: rotate(60deg);
   top: 118px;
   left: 258px;
 }
 
-.road-3 {
+.road-0102 {
   transform: rotate(120deg);
   top: 118px;
   left: 308px;
 }
 
-.road-4 {
+.road-0203 {
   transform: rotate(60deg);
   top: 121px;
   left: 365px;
 }
 
-.road-5 {
+.road-0304 {
   transform: rotate(120deg);
   top: 120px;
   left: 417px;
 }
 
-.road-6 {
+.road-0405 {
   transform: rotate(60deg);
   top: 120px;
   left: 480px;
 }
 
-.road-7 {
+.road-0506 {
   transform: rotate(120deg);
   top: 120px;
   left: 530px;
 }
 
-.road-8 {
+.road-0617 {
   transform: rotate(0);
   top: 157px;
   left: 550px;
 }
 
-.road-9 {
+.road-1011 {
   transform: rotate(60deg);
   top: 215px;
   left: 205px;
 }
 
-.road-10 {
+.road-1112 {
   transform: rotate(-60deg);
   top: 207px;
   left: 255px;
 }
 
-.road-11 {
+.road-1213 {
   transform: rotate(60deg);
   top: 207px;
   left: 310px;
 }
 
-.road-12 {
+.road-1314 {
   transform: rotate(-60deg);
   top: 207px;
   left: 365px;
 }
 
-.road-13 {
+.road-1415 {
   transform: rotate(60deg);
   top: 207px;
   left: 420px;
 }
 
-.road-14 {
+.road-1516 {
   transform: rotate(-60deg);
   top: 207px;
   left: 475px;
 }
 
-.road-15 {
+.road-1617 {
   transform: rotate(60deg);
   top: 207px;
   left: 530px;
 }
 
-.road-16 {
+.road-1718 {
   transform: rotate(-60deg);
   top: 210px;
   left: 580px;
 }
 
-.road-17 {
+.road-2122 {
   transform: rotate(-60deg);
   top: 302px;
   left: 200px;
 }
 
-.road-18 {
+.road-2223 {
   transform: rotate(60deg);
   top: 302px;
   left: 255px;
 }
 
-.road-19 {
+.road-2324 {
   transform: rotate(-60deg);
   top: 302px;
   left: 310px;
 }
 
-.road-20 {
+.road-2425 {
   transform: rotate(60deg);
   top: 302px;
   left: 365px;
 }
 
-.road-21 {
+.road-2526 {
   transform: rotate(-60deg);
   top: 302px;
   left: 420px;
 }
 
-.road-22 {
+.road-2627 {
   transform: rotate(60deg);
   top: 302px;
   left: 475px;
 }
 
-.road-23 {
+.road-2728 {
   transform: rotate(-60deg);
   top: 302px;
   left: 530px;
 }
 
-.road-24 {
+.road-2829 {
   transform: rotate(60deg);
   top: 302px;
   left: 585px;
 }
 
-.road-25 {
+.road-29210 {
   transform: rotate(-60deg);
   top: 302px;
   left: 640px;
 }
 
-.road-26 {
+.road-2021 {
   transform: rotate(60deg);
   top: 305px;
   left: 143px;
 }
 
-.road-27 {
+.road-3031 {
   transform: rotate(-60deg);
   top: 395px;
   left: 145px;
 }
 
-.road-28 {
+.road-3132 {
   transform: rotate(60deg);
   top: 397px;
   left: 200px;
 }
 
-.road-29 {
+.road-3233 {
   transform: rotate(-60deg);
   top: 397px;
   left: 255px;
 }
 
-.road-30 {
+.road-3334 {
   transform: rotate(60deg);
   top: 397px;
   left: 310px;
 }
 
-.road-31 {
+.road-3435 {
   transform: rotate(-60deg);
   top: 397px;
   left: 365px;
 }
 
-.road-32 {
+.road-3536 {
   transform: rotate(60deg);
   top: 397px;
   left: 420px;
 }
 
-.road-33 {
+.road-3637 {
   transform: rotate(-60deg);
   top: 397px;
   left: 475px;
 }
 
-.road-34 {
+.road-3738 {
   transform: rotate(60deg);
   top: 397px;
   left: 530px;
 }
 
-.road-35 {
+.road-3839 {
   transform: rotate(-60deg);
   top: 397px;
   left: 585px;
 }
 
-.road-36 {
+.road-39310 {
   transform: rotate(60deg);
   top: 397px;
   left: 640px;
 }
 
-.road-37 {
+.road-4041 {
   transform: rotate(-60deg);
   top: 492px;
   left: 200px;
 }
 
-.road-38 {
+.road-4142 {
   transform: rotate(60deg);
   top: 492px;
   left: 255px;
 }
 
-.road-39 {
+.road-4243 {
   transform: rotate(-60deg);
   top: 492px;
   left: 310px;
 }
 
-.road-40 {
+.road-4344 {
   transform: rotate(60deg);
   top: 492px;
   left: 365px;
 }
 
-.road-41 {
+.road-4445 {
   transform: rotate(-60deg);
   top: 492px;
   left: 420px;
 }
 
-.road-42 {
+.road-4546 {
   transform: rotate(60deg);
   top: 492px;
   left: 475px;
 }
 
-.road-43 {
+.road-4647 {
   transform: rotate(-60deg);
   top: 492px;
   left: 530px;
 }
 
-.road-44 {
+.road-4748 {
   transform: rotate(60deg);
   top: 492px;
   left: 580px;
 }
 
-.road-45 {
+.road-5051 {
   transform: rotate(-60deg);
   top: 580px;
   left: 258px;
 }
 
-.road-46 {
+.road-5152 {
   transform: rotate(60deg);
   top: 580px;
   left: 310px;
 }
 
-.road-47 {
+.road-5253 {
   transform: rotate(-60deg);
   top: 580px;
   left: 363px;
 }
 
-.road-48 {
+.road-5354 {
   transform: rotate(60deg);
   top: 580px;
   left: 420px;
 }
 
-.road-49 {
+.road-5455 {
   transform: rotate(-60deg);
   top: 580px;
   left: 480px;
 }
 
-.road-50 {
+.road-5556 {
   transform: rotate(60deg);
   top: 580px;
   left: 530px;
@@ -725,117 +725,117 @@
   left: 530px;
 }
 
-.road-52 {
+.road-0213 {
   top: 177px;
   left: 343px;
 }
 
-.road-53 {
+.road-0415 {
   top: 177px;
   left: 453px;
 }
 
-.road-54 {
+.road-1021 {
   top: 275px;
   left: 185px;
 }
 
-.road-55 {
+.road-1223 {
   top: 270px;
   left: 288px;
 }
 
-.road-56 {
+.road-1425 {
   top: 270px;
   left: 398px;
 }
 
-.road-57 {
+.road-1627 {
   top: 270px;
   left: 508px;
 }
 
-.road-58 {
+.road-1829 {
   top: 270px;
   left: 613px;
 }
 
-.road-59 {
+.road-2030 {
   top: 365px;
   left: 130px;
 }
 
-.road-60 {
+.road-2232 {
   top: 365px;
   left: 233px;
 }
 
-.road-61 {
+.road-2434 {
   top: 365px;
   left: 343px;
 }
 
-.road-62 {
+.road-2636 {
   top: 365px;
   left: 453px;
 }
 
-.road-63 {
+.road-2838 {
   top: 365px;
   left: 563px;
 }
 
-.road-64 {
+.road-210310 {
   top: 365px;
   left: 668px;
 }
 
-.road-65 {
+.road-3140 {
   top: 460px;
   left: 185px;
 }
 
-.road-73{
+.road-3342{
   top: 460px;
   left: 287px;
 }
 
-.road-66 {
+.road-3544 {
   top: 460px;
   left: 288px;
 }
 
-.road-66 {
+.road-3544 {
   top: 460px;
   left: 398px;
 }
 
-.road-67 {
+.road-3746 {
   top: 460px;
   left: 508px;
 }
 
-.road-68 {
+.road-3948 {
   top: 460px;
   left: 613px;
 }
 
-.road-69 {
+.road-4150{
   top: 555px;
   left: 240px;
 }
 
-.road-70 {
+.road-4352 {
   top: 555px;
   left: 343px;
 }
 
-.road-71 {
+.road-4554 {
   top: 555px;
   left: 453px;
 }
 
-.road-72 {
+.road-4756 {
   top: 555px;
   left: 558px;
 }

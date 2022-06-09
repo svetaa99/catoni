@@ -101,15 +101,15 @@ public class PositionController {
 
     //POSITION MANIPULATION
     @PostMapping(value="road", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Road> addRoad(@RequestBody RoadDto road){
+    public ResponseEntity<RoadDto> addRoad(@RequestBody RoadDto road){
         position.addRoad(road);
 //        System.out.println(position);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(road, HttpStatus.OK);
     }
 
     @PostMapping(value="building", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Building> addBuilding(@RequestBody BuildingDto building){
-        position.addBuilding(building);
+        Building b = position.addBuilding(building);
         if(building.getType() == BuildingTypes.HOUSE){
             int previousHouses = inputState.getPlayerStates().get(building.getPlayerName()).getNumberOfHouses();
             inputState.getPlayerStates().get(building.getPlayerName()).setNumberOfHouses(previousHouses+1);
@@ -121,7 +121,7 @@ public class PositionController {
             inputState.getPlayerStates().get(building.getPlayerName()).setNumberOfHotels(previousHotels+1);
         }
 //        System.out.println(position);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(b, HttpStatus.OK);
     }
 
     @GetMapping(value="starting-house", produces = "application/json")

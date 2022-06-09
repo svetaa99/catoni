@@ -1,5 +1,6 @@
 package com.catoni.models;
 
+import com.catoni.exceptions.PositionNotAvailableException;
 import com.catoni.models.dto.BuildingDto;
 import com.catoni.models.dto.ChanceInitDto;
 import com.catoni.models.dto.RoadDto;
@@ -66,6 +67,8 @@ public class Position {
                         roadRight.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
                         roadRight.setBuilding2(new Building(row, col + 1, calculateHarbor(row, col + 1), "null", BuildingTypes.NONE, Status.FREE));
 
+                        if(row == 2)
+                            colIndex = col;
                         Road roadDown = new Road(row, col, row + 1, colIndex, "null", Status.FREE);
                         roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
                         roadDown.setBuilding2(new Building(row, colIndex, calculateHarbor(row + 1, colIndex), "null", BuildingTypes.NONE, Status.FREE));
@@ -214,10 +217,18 @@ public class Position {
                         r.setBuilding2(bld);
                     }
                 }
+                if(b.getStatus() != Status.FREE){
+                    throw new PositionNotAvailableException();
+                }
                 b.setStatus(Status.TAKEN);
                 b.setOwner(building.getPlayerName());
-                b.setType(building.getType());
-                findNearbyBuildings(b);
+                if(b.getType() == BuildingTypes.NONE){
+                    b.setType(BuildingTypes.HOUSE);
+                    findNearbyBuildings(b);
+                }
+                else if(b.getType() == BuildingTypes.HOUSE)
+                    b.setType(BuildingTypes.HOTEL);
+                return b;
             }
         }
         return null;
