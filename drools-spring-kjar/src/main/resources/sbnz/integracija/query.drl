@@ -1,0 +1,31 @@
+package com.catoni;
+
+import com.catoni.models.enums.*;
+import com.catoni.models.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.HashMap;
+import java.util.Map;
+
+
+query "Average houses for input state"(InputState $is)
+  $playerName: String()
+  $houses := Number(intValue >= 0) from accumulate(
+    State($s: this) from $is.getPlayerStates().get($playerName),
+    sum($s.getNumberOfHouses())
+  )
+
+  $hotels := Number(intValue >= 0) from accumulate(
+    State($s: this) from $is.getPlayerStates().get($playerName),
+    sum($s.getNumberOfHotels())
+  )
+
+  $roads := Number(intValue >= 0) from accumulate(
+    State($s: this) from $is.getPlayerStates().get($playerName),
+    sum($s.getNumberOfRoads())
+  )
+end
