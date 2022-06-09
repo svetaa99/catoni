@@ -13,10 +13,11 @@ import java.util.Map;
 
 rule "Available house position"
   lock-on-active true
+  no-loop
   salience 100
   when
     $is: InputState()
-    
+
     accumulate(
         Building($t: this) from $is.position.getAvailableBuildingSpotsForPlayer("bot"),
         $available: collectList($t)
@@ -31,7 +32,7 @@ rule "Available house position"
 
     $b: Building(status == Status.FREE && getSumOfChances() == $val) from $available
 
-    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE) )
+    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE) && !moveList.contains(MoveTypes.WIN_GAME) )
 
   then
     System.out.println("AVAILABLE HOUSES");
@@ -63,7 +64,7 @@ rule "Available hotel position"
 
     $b: Building(type == BuildingTypes.HOUSE && getSumOfChances() == $val) from $available
 
-    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOTEL) )
+    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOTEL) && !moveList.contains(MoveTypes.WIN_GAME) )
   then
     System.out.println("DAJ HOTELAAAAA");
     System.out.println($available);
@@ -87,7 +88,7 @@ rule "Available road position"
 
     eval($available.size() >= 1)
 
-    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_ROAD) )
+    $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_ROAD) && !moveList.contains(MoveTypes.WIN_GAME) )
   then
     List<Building> possibleBuildings = new ArrayList<>();
     List<Double> possibleResourcesChances = new ArrayList<>();
@@ -109,6 +110,9 @@ rule "Available road position"
       }
     }
 
+    System.out.println("POSSIBLE ROADS");
+    System.out.println($available);
+
     System.out.println("POSSIBLE HOUSES");
     System.out.println(possibleBuildings);
     
@@ -126,8 +130,11 @@ rule "Available road position"
           break;
         }
       }
-
-      $m.addMove(MoveTypes.POTENTIAL_BUILD_ROAD);
-      update($m);
+    } else {
+      int randomNum = ThreadLocalRandom.current().nextInt(0, $available.size() - 1);
+      $m.addRoad((Road) $available.get(randomNum));
     }
+
+    $m.addMove(MoveTypes.POTENTIAL_BUILD_ROAD);
+    update($m);
 end

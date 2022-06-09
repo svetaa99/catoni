@@ -46,6 +46,14 @@ public class InputState {
         this.isMyTurn = isMyTurn;
     }
 
+    public InputState updateState(InputState is) {
+        this.resources = is.getResources();
+        this.playerStates = is.getPlayerStates();
+        this.distanceToHarbor = is.getDistanceToHarbor();
+        this.position = is.getPosition();
+        return this;
+    }
+
     public List<ResourceTypes> findExcess(int wood, int clay, int grain, int sheep, int rock, BuildingTypes goal, ResourceTypes cardToGet){
         List<ResourceTypes> retVal = new ArrayList<>();
         if(goal == BuildingTypes.HOUSE){

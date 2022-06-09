@@ -16,6 +16,8 @@ public class GlobalState {
     public Map<Integer, String> mostKnights; //ZAR NE TREBA OBRNUTO
     public String playerOnTurn;
 
+    public int pointsForWin;
+
     private GlobalState()
     {
         playerNames = new ArrayList<>();
@@ -24,6 +26,7 @@ public class GlobalState {
         mostKnights = new HashMap<>();
         mostKnights.put(3, "player2");
         playerOnTurn = "";
+        pointsForWin = 10;
     }
 
     public static GlobalState getInstance()
@@ -32,5 +35,20 @@ public class GlobalState {
             instance = new GlobalState();
 
         return instance;
+    }
+
+    public void setPointsForWin(int pointsForWin) {
+        this.pointsForWin = pointsForWin;
+    }
+
+    @Override
+    public String toString() {
+        return "GlobalState{" +
+                "playerNames=" + playerNames +
+                ", longestRoad=" + longestRoad +
+                ", mostKnights=" + mostKnights +
+                ", playerOnTurn='" + playerOnTurn + '\'' +
+                ", pointsForWin=" + pointsForWin +
+                '}';
     }
 }

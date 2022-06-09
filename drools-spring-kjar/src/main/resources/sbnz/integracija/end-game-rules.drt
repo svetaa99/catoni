@@ -1,0 +1,36 @@
+template header
+pointsForWin
+
+package com.catoni;
+
+import com.catoni.models.enums.*;
+import com.catoni.models.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+template "Set points for winning the game"
+
+rule "Set points to @{pointsForWin}"
+  no-loop
+  salience 10000000
+  lock-on-active true
+  when
+    $gs: GlobalState()
+    eval(@{pointsForWin} > 0)
+
+    $is: InputState()
+    
+    $m: Move()
+  then
+    modify($gs) { setPointsForWin(@{pointsForWin})}
+    if ($is.getPlayerStates().get("bot").getTotalGamePoints("bot") >= @{pointsForWin}) {
+      $m.addMove(MoveTypes.WIN_GAME);
+    }
+end
+
+end template
