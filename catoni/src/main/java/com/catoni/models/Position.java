@@ -218,13 +218,18 @@ public class Position {
                     }
                 }
                 if(b.getStatus() != Status.FREE){
-                    throw new PositionNotAvailableException();
+                    if(!b.getOwner().equals(building.getPlayerName()) || b.getType() == BuildingTypes.HOTEL)
+                        throw new PositionNotAvailableException();
                 }
                 b.setStatus(Status.TAKEN);
                 b.setOwner(building.getPlayerName());
-
+                if(b.getType() == BuildingTypes.NONE)
+                    b.setType(BuildingTypes.HOUSE);
+                else if(b.getType() == BuildingTypes.HOUSE)
+                    b.setType(BuildingTypes.HOTEL);
                 InputState.getInstance().updateChances(building.getPlayerName(), b);
 
+                findNearbyBuildings(b);
                 return b;
             }
         }

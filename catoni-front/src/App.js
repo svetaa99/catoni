@@ -31,7 +31,7 @@ function App() {
   }
 
   function addBuilding(row, col, btnId){
-    buildHouse({row, col, playerName: players[playerToMove], type: 1}, (response) => {
+    buildHouse({row, col, playerName: players[playerToMove]}, (response) => {
       //proveri da li je kuca ili hotel pa povecaj dugme
       console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
       var idStr = row+""+col;
@@ -94,6 +94,7 @@ function App() {
     Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000}).then(()=>{
       var y = players[0] == "bot" ? moveCounter+1: moveCounter;
       if(players[x] == "bot" && y <= 2){
+        //if y <= 2 //else -> 
         console.log("Potez: " + moveCounter);
         getStartingPosition((response) => {
             console.log(response.data);
@@ -410,7 +411,7 @@ function App() {
       </div>
     </div>
     <div className="bottom">
-      {/* end turn build house build road build hotel play crazy */}
+      {/* end turn play crazy */}
       <button className={players[0] == "bot" ? 'dice' : 'hidden'} onClick={startGame}>START GAME</button>
       <button className='dice' onClick={rollDice}>Roll dice</button>
       <button className='endTurn' onClick={endTurn}>End turn</button>
