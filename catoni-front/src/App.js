@@ -1,10 +1,13 @@
 import './App.css';
 import {useState, useEffect} from 'react';
 import axios from "axios";
-import { addResourcesToPositions, buildHouse, buildRoad, getStartingPosition, initChances, initState } from './axiosservice/axiosService';
+import { addCrazy, addResourcesToPositions, buildHouse, buildRoad, getCraziesForPlayerName, getResourcesForPlayerName, getStartingPosition, initChances, initState } from './axiosservice/axiosService';
 import { getResourcesForNumber, random } from './util/rng';
 import Swal from 'sweetalert2';
 import { INIT_STATE } from './constants/inputstate';
+import { shuffle } from './util/shuffle';
+import { CRAZIES_LIST } from './constants/crazies';
+import { printResourcesInHand } from './util/print';
 
 function App() {
 
@@ -17,6 +20,8 @@ function App() {
   const[phase, setPhase] = useState("start");
 
   const [moveCounter, setMoveCounter] = useState(1);
+
+  const [resourcesInHand, setResourcesInHand] = useState([])
 
   function startGame(){
     getStartingPosition((response) => {
@@ -114,6 +119,13 @@ function App() {
     });
   }
 
+  const buyCrazy = (e) => {
+    e.preventDefault();
+    const randomNumber = random(0, 24);
+    const pickedCrazy = shuffle(CRAZIES_LIST)[randomNumber];
+    addCrazy(players[playerToMove], pickedCrazy);
+  }
+
   useEffect(() => {
     //GET-INPUT-STATE (bcs of reload)|| INIT-INPUT-STATE + INIT-POSITION
     Swal.fire({title: "Welcome to CATONI", text: "How many players are playing(one spot is reserved for our bot so type in 2 or 3):", input: 'number'})
@@ -148,6 +160,18 @@ function App() {
     });
     
   }, []);
+
+
+  useEffect(() => {
+    getResourcesForPlayerName(players[playerToMove], (response) => {
+      const resources = response.data;
+      getCraziesForPlayerName(players[playerToMove], (resp) => {
+        setResourcesInHand([...resources, ...resp.data])
+      })
+    })
+  }, [playerToMove, players])
+
+
   return (
     <>
     <div className="playersInfo">
@@ -411,10 +435,12 @@ function App() {
       </div>
     </div>
     <div className="bottom">
-      {/* end turn play crazy */}
+      <p>{printResourcesInHand(resourcesInHand)}</p>
+      {/* end turn build house build road build hotel play crazy */}
       <button className={players[0] == "bot" ? 'dice' : 'hidden'} onClick={startGame}>START GAME</button>
       <button className='dice' onClick={rollDice}>Roll dice</button>
       <button className='endTurn' onClick={endTurn}>End turn</button>
+      <button className='crazy' onClick={buyCrazy}>Buy crazy</button>
     </div>
     </>
   );

@@ -50,6 +50,39 @@ export function buildRoad(dto, callback=defaultCallback, errorCallback=defaultEr
     });
 }
 
+export function addCrazy(playerName, crazyType, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .get(`${API_URL}/position/add-crazy/${playerName}/${crazyType}`)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
+export function getResourcesForPlayerName(playerName, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .get(`${API_URL}/position/get-resources/${playerName}`)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
+export function getCraziesForPlayerName(playerName, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .get(`${API_URL}/position/get-crazies/${playerName}`)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
 export function initState(playerCount, callback=defaultCallback, errorCallback=defaultErrorCallback){
 
     axios
