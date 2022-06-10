@@ -14,9 +14,38 @@ rule "Build House"
             resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)
             && resources.contains(ResourceTypes.SHEEP) && resources.contains(ResourceTypes.GRAIN)
             )
-        $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE) )
+        $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE))
+
+        accumulate(
+            Building($t: this, status == Status.FREE) from $m.buildings,
+            $availableBuildings: collectList($t)
+        )
+
     then
-        System.out.println("Building house!");
+        if ($availableBuildings.size() > 0) {
+            double maxChance = -1;
+            Building buildingToBuild = null;
+            for (Object b : $availableBuildings) {
+                Building building = (Building) b;
+                if (building.getSumOfChances() > maxChance) {
+                    maxChance = building.getSumOfChances();
+                    buildingToBuild = building;
+                }
+            }
+
+            if (buildingToBuild != null) {
+                BuildingDto dto = new BuildingDto();
+                dto.setRow(buildingToBuild.getRow());
+                dto.setCol(buildingToBuild.getColumn());
+                dto.setPlayerName("bot");
+                dto.setType(BuildingTypes.HOUSE);
+                $is.getPosition().addBuilding(dto);
+                int numberOfHouses = $is.getPlayerStates().get("bot").getNumberOfHouses();
+                $is.getPlayerStates().get("bot").setNumberOfHouses(numberOfHouses + 1);
+                System.out.println("Building house on position: row1: " + dto.getRow() + " col: " + dto.getCol());
+            }
+        }
+
         $m.addMove(MoveTypes.BUILD_HOUSE);
 
         System.out.println("Removing resources from hand");
@@ -25,8 +54,8 @@ rule "Build House"
         availableResources.remove(ResourceTypes.CLAY);
         availableResources.remove(ResourceTypes.GRAIN);
         availableResources.remove(ResourceTypes.SHEEP);
-        System.out.println("Available resources after building house: " + availableResources);
         $is.setResources(availableResources);
+        $is.getPlayerStates().get("bot").setResources(availableResources);
 
         update($is);
         update($m);
@@ -36,7 +65,7 @@ rule "Build Hotel"
     salience 4
     no-loop
     when
-        $is: InputState(Collections.frequency(resources, ResourceTypes.ROCK) == 3 && Collections.frequency(resources, ResourceTypes.GRAIN) == 2)
+        $is: InputState()
 
         Number($rocks: intValue) from accumulate(
             ResourceTypes($t: this, $t == ResourceTypes.ROCK) from $is.resources,
@@ -52,18 +81,50 @@ rule "Build Hotel"
 
         $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_HOTEL) && !moveList.contains(MoveTypes.END_TURN) )
 
+        accumulate(
+            Building($t: this, status == Status.TAKEN && type == BuildingTypes.HOUSE) from $m.buildings,
+            $availableBuildings: collectList($t)
+        )
+
     then
-        System.out.println("Building hotel!");
+
+        if ($availableBuildings.size() > 0) {
+            double maxChance = -1;
+            Building buildingToBuild = null;
+            for (Object b : $availableBuildings) {
+                Building building = (Building) b;
+                if (building.getSumOfChances() > maxChance) {
+                    maxChance = building.getSumOfChances();
+                    buildingToBuild = building;
+                }
+            }
+
+            if (buildingToBuild != null) {
+                BuildingDto dto = new BuildingDto();
+                dto.setRow(buildingToBuild.getRow());
+                dto.setCol(buildingToBuild.getColumn());
+                dto.setPlayerName("bot");
+                dto.setType(BuildingTypes.HOTEL);
+                $is.getPosition().addBuilding(dto);
+                int numberOfHouses = $is.getPlayerStates().get("bot").getNumberOfHouses();
+                $is.getPlayerStates().get("bot").setNumberOfHouses(numberOfHouses - 1);
+                int numberOfHotels = $is.getPlayerStates().get("bot").getNumberOfHotels();
+                $is.getPlayerStates().get("bot").setNumberOfHotels(numberOfHotels + 1);
+                System.out.println("Building hotel on position: row1: " + dto.getRow() + " col: " + dto.getCol());
+            }
+        }
+
         $m.addMove(MoveTypes.BUILD_HOTEL);
 
         System.out.println("Removing resources from hand");
         List<ResourceTypes> availableResources = $is.getResources();
-        $is.getResources().remove(ResourceTypes.ROCK);
-        $is.getResources().remove(ResourceTypes.ROCK);
-        $is.getResources().remove(ResourceTypes.ROCK);
-        $is.getResources().remove(ResourceTypes.GRAIN);
-        $is.getResources().remove(ResourceTypes.GRAIN);
-        System.out.println("Available resources after building hotel: " + $is.getResources());
+        availableResources.remove(ResourceTypes.ROCK);
+        availableResources.remove(ResourceTypes.ROCK);
+        availableResources.remove(ResourceTypes.ROCK);
+        availableResources.remove(ResourceTypes.GRAIN);
+        availableResources.remove(ResourceTypes.GRAIN);
+        $is.setResources(availableResources);
+        $is.getPlayerStates().get("bot").setResources(availableResources);
 
         update($is);
         update($m);
@@ -76,17 +137,26 @@ rule "Build Road"
         $is: InputState(
                 resources.contains(ResourceTypes.WOOD) && resources.contains(ResourceTypes.CLAY)
             )
-        $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_ROAD) )
+        $m: Move( moveList.contains(MoveTypes.POTENTIAL_BUILD_ROAD) && roads.get(0).getStatus() == Status.FREE)
+
     then
-        System.out.println("Building road");
+        RoadDto roadDto = new RoadDto();
+        roadDto.setRow1($m.roads.get(0).getRow1());
+        roadDto.setCol1($m.roads.get(0).getCol1());
+        roadDto.setRow2($m.roads.get(0).getRow2());
+        roadDto.setCol2($m.roads.get(0).getCol2());
+        roadDto.setPlayer("bot");
+        
+        System.out.println("Building road on position: row1: " + roadDto.getRow1() + " col1: " + roadDto.getCol1() + " row2: " + roadDto.getRow2() + " col2: " + roadDto.getCol2());
         $m.addMove(MoveTypes.BUILD_ROAD);
 
         System.out.println("Removing resources from hand");
         List<ResourceTypes> availableResources = $is.getResources();
         availableResources.remove(ResourceTypes.WOOD);
         availableResources.remove(ResourceTypes.CLAY);
-        System.out.println("Available resources after building road: " + availableResources);
         $is.setResources(availableResources);
+        $is.getPlayerStates().get("bot").setResources(availableResources);
+        $is.getPosition().addRoad(roadDto);
 
         update($is);
         update($m);

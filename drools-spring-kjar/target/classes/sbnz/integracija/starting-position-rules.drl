@@ -43,6 +43,8 @@ rule "Build House Start"
        $dtoB.setPlayerName("bot");
 
        $is.getPosition().addBuilding($dtoB);
+       int numberOfHouses = $is.getPlayerStates().get("bot").getNumberOfHouses();
+        $is.getPlayerStates().get("bot").setNumberOfHouses(numberOfHouses + 1);
        update($dtoB);
 end
 

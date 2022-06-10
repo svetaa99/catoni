@@ -35,8 +35,6 @@ rule "Available house position"
     $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOUSE) && !moveList.contains(MoveTypes.WIN_GAME) )
 
   then
-    System.out.println("AVAILABLE HOUSES");
-    System.out.println($available);
     $m.addMove(MoveTypes.POTENTIAL_BUILD_HOUSE);
     $m.addBuilding($b);
     update($m);
@@ -66,8 +64,6 @@ rule "Available hotel position"
 
     $m: Move( !moveList.contains(MoveTypes.POTENTIAL_BUILD_HOTEL) && !moveList.contains(MoveTypes.WIN_GAME) )
   then
-    System.out.println("DAJ HOTELAAAAA");
-    System.out.println($available);
     $m.addMove(MoveTypes.POTENTIAL_BUILD_HOTEL);
     $m.addBuilding($b);
     update($m);
@@ -110,17 +106,9 @@ rule "Available road position"
       }
     }
 
-    System.out.println("POSSIBLE ROADS");
-    System.out.println($available);
-
-    System.out.println("POSSIBLE HOUSES");
-    System.out.println(possibleBuildings);
-    
     if (possibleBuildings.size() > 0) {
       Double maxChance = Collections.max(possibleResourcesChances);
       int indexOfMax = possibleResourcesChances.indexOf(maxChance);
-      System.out.println("BEST HOUSE TO BUILD");
-      System.out.println(possibleBuildings.get(indexOfMax));
       Building bestBuilding = possibleBuildings.get(indexOfMax);
 
       for (Object road : $available) {
