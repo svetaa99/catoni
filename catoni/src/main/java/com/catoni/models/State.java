@@ -78,6 +78,19 @@ public class State {
         return roadsBonus;
     }
 
+    @Override
+    public String toString() {
+        return "State{" +
+                "numberOfRoads=" + numberOfRoads +
+                ", numberOfHouses=" + numberOfHouses +
+                ", numberOfHotels=" + numberOfHotels +
+                ", numberOfKnights=" + numberOfKnights +
+                ", resources=" + resources +
+                ", craziesList=" + craziesList +
+                ", resourceChances=" + resourceChances +
+                '}';
+    }
+
     public int getNumberOfRoads() {
         return numberOfRoads;
     }
@@ -138,12 +151,5 @@ public class State {
     }
 
     public void addResource(ResourceTypes resource) { this.resources.add(resource); }
-    @Override
-    public String toString() {
-        return "State{" +
-                "resources=" + resources +
-                ", craziesList=" + craziesList +
-                ", resourceChances=" + resourceChances +
-                '}';
-    }
+
 }

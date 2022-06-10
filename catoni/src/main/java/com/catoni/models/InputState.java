@@ -16,6 +16,7 @@ public class InputState {
 
     private int distanceToHarbor;
 
+    @org.kie.api.definition.type.Position(0)
     private Map<String, State> playerStates;
 
     public static InputState getInstance(){
