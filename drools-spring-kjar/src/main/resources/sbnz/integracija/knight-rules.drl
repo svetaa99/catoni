@@ -68,9 +68,9 @@ rule "Play KNIGHT to steal a needed card"
       playersAndPoints.put(entry.getKey(), entry.getValue().getTotalGamePoints(entry.getKey()));
     }
 
-    System.out.println("Player points: " + playersAndPoints);
+    //System.out.println("Player points: " + playersAndPoints);
     String maxName = playersAndPoints.entrySet().stream().max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getKey();
-    System.out.println("MOST POINTS PLAYER: " + maxName + " -> Stealing card from " + maxName);
+    //System.out.println("MOST POINTS PLAYER: " + maxName + " -> Stealing card from " + maxName);
 
     switch(maxName) {
       case "player1":
@@ -119,6 +119,10 @@ rule "Play KNIGHT to steal a needed card"
     System.out.println("Resource drawn: " + resource);
 
     State myPlayerState = $is.getPlayerStates().get("bot");
+    //UPDATE numberOfKnights
+    int prevKnights = myPlayerState.getNumberOfKnights();
+    myPlayerState.setNumberOfKnights(prevKnights + 1);
+
     List<CrazyTypes> newCraziesList = myPlayerState.getCraziesList();
     newCraziesList.remove(CrazyTypes.KNIGHT);
     myPlayerState.setCraziesList(newCraziesList);

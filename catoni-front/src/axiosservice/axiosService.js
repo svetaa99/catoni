@@ -14,6 +14,28 @@ export function getStartingPosition(callback=defaultCallback, errorCallback=defa
     });
 }
 
+export function answerTrade(trade, callback=defaultCallback, errorCallback=defaultErrorCallback){
+    axios
+    .post(`${API_URL}/moves/answer`, trade)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
+export function getMove(callback=defaultCallback, errorCallback=defaultErrorCallback){
+    axios
+    .get(`${API_URL}/moves/`)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
 export function addResourcesToPositions(dto, callback=defaultCallback, errorCallback=defaultErrorCallback){
     axios
     .post(`${API_URL}/position/add-resources-for-positions`, JSON.stringify(dto), 

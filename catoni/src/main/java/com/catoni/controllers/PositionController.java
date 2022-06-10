@@ -169,7 +169,7 @@ public class PositionController {
     @PostMapping(value="init-chances", produces = "application/json", consumes="application/json")
     public ResponseEntity<Position> initChances(@RequestBody ChanceInitDto chances){
         position.initChances(chances);
-        System.out.println(position);
+//        System.out.println(position);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

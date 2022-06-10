@@ -7,7 +7,7 @@ import com.catoni.models.enums.ResourceTypes;
 import com.catoni.models.*;
 
 rule "Build House"
-    salience 4
+    salience 5
     no-loop
     when
         $is: InputState(
@@ -131,7 +131,7 @@ rule "Build Hotel"
 end
 
 rule "Build Road"
-    salience 1
+    salience 2
     no-loop
     when
         $is: InputState(
@@ -171,8 +171,10 @@ rule "Buy Crazy if you have a lot rocks and grains"
             resources.contains(ResourceTypes.SHEEP) &&
             resources.contains(ResourceTypes.GRAIN) &&
             resources.contains(ResourceTypes.ROCK) &&
-            playerStates.get("bot").getResourceChances().get(ResourceTypes.ROCK) > 0.07 &&
-            playerStates.get("bot").getResourceChances().get(ResourceTypes.GRAIN) > 0.07
+            ((playerStates.get("bot").getResourceChances().get(ResourceTypes.ROCK) > 0.07 &&
+                playerStates.get("bot").getResourceChances().get(ResourceTypes.GRAIN) > 0.07) ||
+                resources.size() > 7
+            )
             )
         $m: Move()
 
@@ -186,7 +188,24 @@ rule "Buy Crazy if you have a lot rocks and grains"
         availableResources.remove(ResourceTypes.GRAIN);
         availableResources.remove(ResourceTypes.SHEEP);
         System.out.println("Available resources after buying crazy: " + availableResources);
+        //ADD ONE RANDOM CRAZY TO CRAZIES LIST OF BOT
+        List<CrazyTypes> old = $is.getPlayerStates().get("bot").getCraziesList();
+
+        List<CrazyTypes> allCrazies = new ArrayList<>();
+        allCrazies.add(CrazyTypes.KNIGHT);
+        allCrazies.add(CrazyTypes.KNIGHT);
+        allCrazies.add(CrazyTypes.KNIGHT);
+        allCrazies.add(CrazyTypes.KNIGHT);
+        allCrazies.add(CrazyTypes.YEAR_OF_PLENTY);
+        allCrazies.add(CrazyTypes.MONOPOLY);
+        allCrazies.add(CrazyTypes.ROAD_BUILDING);
+        allCrazies.add(CrazyTypes.VICTORY_POINT);
+        allCrazies.add(CrazyTypes.VICTORY_POINT);
+        int randomNum = ThreadLocalRandom.current().nextInt(0, 8);
+        old.add(allCrazies.get(randomNum));
+
         $is.setResources(availableResources);
+        $is.getPlayerStates().get("bot").setCraziesList(old);
 
         update($is);
         update($m);

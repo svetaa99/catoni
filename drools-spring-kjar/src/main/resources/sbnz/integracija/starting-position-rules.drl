@@ -35,7 +35,6 @@ rule "Build House Start"
        $dtoB: BuildingDto()
 
     then
-       System.out.println($best.get(0));
 
        $dtoB.setRow(((Building) $best.get(0)).getRow());
        $dtoB.setCol(((Building) $best.get(0)).getColumn());
@@ -66,8 +65,6 @@ rule "Build Road Start"
         )
         $dtoR: RoadDto()
     then
-        System.out.println("RU RU RU");
-        System.out.println((Building) $br.get(0));
         Road r = $is.getPosition().getRoadTowardsBuilding($b, (Building) $br.get(0));
         $dtoR.setRow1(r.getRow1());
         $dtoR.setCol1(r.getCol1());

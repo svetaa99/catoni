@@ -1,7 +1,7 @@
 import './App.css';
 import {useState, useEffect} from 'react';
 import axios from "axios";
-import { addCrazy, addResourcesToPositions, buildHouse, buildRoad, getCraziesForPlayerName, getResourcesForPlayerName, getStartingPosition, initChances, initState } from './axiosservice/axiosService';
+import { addCrazy, addResourcesToPositions, answerTrade, buildHouse, buildRoad, getCraziesForPlayerName, getMove, getResourcesForPlayerName, getStartingPosition, initChances, initState } from './axiosservice/axiosService';
 import { getResourcesForNumber, random } from './util/rng';
 import Swal from 'sweetalert2';
 import { INIT_STATE } from './constants/inputstate';
@@ -26,7 +26,7 @@ function App() {
   function startGame(){
     getStartingPosition((response) => {
       console.log(response.data);
-      var idStr = response.data.building.row+""+response.data.building.col;
+      var idStr = response.data.building.row+""+response.data.building.col; //moze u funkciju van fajla
       document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
       var rIdStr = response.data.road.row1+""+response.data.road.col1+""+response.data.road.row2+""+response.data.road.col2;
       document.querySelector(`.road-${rIdStr}`).classList.add("road", `road-${rIdStr}`, `put-${playerToMove}`);
@@ -37,20 +37,19 @@ function App() {
 
   function addBuilding(row, col, btnId){
     buildHouse({row, col, playerName: players[playerToMove]}, (response) => {
-      //proveri da li je kuca ili hotel pa povecaj dugme
-      console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
+      console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col); //moze u funkciju van fajla
       var idStr = row+""+col;
       console.log("FARBAJ NA: " + idStr);
       document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
       var selected = document.querySelector(`.btn-${idStr}`)
-      if(response.data.type == 2)
+      if(response.data.type == "HOTEL")
         selected.textContent = "H";
     });//catch
   }
 
   function addRoad(row1, col1, row2, col2){
     buildRoad({row1, col1, row2, col2, player: players[playerToMove]}, (response) => {
-      var roadId = row1+""+col1+""+row2+""+col2;
+      var roadId = row1+""+col1+""+row2+""+col2; //funkcija van fajla
       console.log(playerToMove + " BUILT A ROAD : " + roadId);
       document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${playerToMove}`);
     });//catch
@@ -80,6 +79,9 @@ function App() {
     getResourcesForNumber(fallen, (resourcesPositions) => {
       addResourcesToPositions(resourcesPositions, (response) => {
         setInputState(response.data);
+        getResourcesForPlayerName(players[playerToMove], (response) => {
+          setResourcesInHand(response.data);
+        })
       })
     });
     Swal.fire({title:`${fallen}` ,timer: 1000, showConfirmButton: false, width: '100px'});
@@ -98,10 +100,10 @@ function App() {
     var x = nextToMove(playerToMove);
     Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000}).then(()=>{
       var y = players[0] == "bot" ? moveCounter+1: moveCounter;
-      if(players[x] == "bot" && y <= 2){
-        //if y <= 2 //else -> 
-        console.log("Potez: " + moveCounter);
-        getStartingPosition((response) => {
+      console.log("Potez: " + y);
+      if(players[x] == "bot"){
+        if(y <= 2){
+          getStartingPosition((response) => {
             console.log(response.data);
             let idStr = response.data.building.row + "" + response.data.building.col
             document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${x}`);
@@ -111,11 +113,107 @@ function App() {
             setPlayerToMove(x);
             Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000});
             return;
-        });
+          });
+        }
+        else{
+          rollDice(e);
+          moveHandler();
+        }
       }
       else{
         setPlayerToMove(x);
       }
+    });
+  }
+
+  function moveHandler(){
+    getMove(response => {
+      // console.log(response.data);
+      response.data.moveList.map(move => {
+        if(move == 'START_TURN'){
+          console.log(response.data);
+        }
+        else if(move == 'OFFER_TRADE_WITH_PLAYER'){
+          //DIALOG N TIMES (len(list))
+          console.log(response.data.trade);
+          var acceptedTrade = [];
+          var askedResource = Object.keys(response.data.trade.tradeOffer.receive)[0];
+          players.map(p => {
+            if(p != "bot"){
+              getResourcesForPlayerName(p, (resources) => {
+                var isEligible = false;
+                console.log(`ITERATING THROUGH LIST OF ${p}'S RESOURCES`);
+                resources.data.map(res => {
+                  // console.log(`${res} == ${askedResource}`);
+                  if(res == askedResource){
+                    isEligible = true;
+                    console.log(`${p} IS ELIGIBLE FOR THE TRADE!`);
+                  }
+                })
+                if(isEligible){
+                  Swal.fire({text: `${p} do you accept the trade? YOU GET: ${response.data.trade.tradeOffer.offer} FOR ${askedResource}`, showCancelButton:true, confirmButtonText: "Yes", cancelButtonText: "No"})
+                    .then((result) => {
+                      if(result.isConfirmed){
+                        acceptedTrade.push(p);
+                        answerTrade({... response.data.trade, acceptedTrade, status: "ACCEPTED"}, (r) => {
+                          console.log("ACCEPT TRADE");
+                          console.log(r.data);
+                          // moveHandler();//WRONG BEHAVIOUR ?
+                        });
+                      }
+                      else if(result.isDismissed){
+                        console.log("DECLINE TRADE");
+                        console.log(response.data);
+                      }
+                    });
+                  }
+              })
+            }
+          })
+          
+          // answerTrade({... response.data.trade, acceptedTrade, status: acceptedTrade.length > 0 ? "ACCEPTED" : "DECLINED"},
+          // (response) => {
+          //   console.log(response.data);
+          // });
+        }
+        else if(move == 'BUILD_HOUSE'){
+          // let buildingPosition = response.data.buildings[0];
+          response.data.buildings.map((buildingPosition) =>{
+            if(buildingPosition.type == "NONE" && buildingPosition.status == "TAKEN"){
+              var idStr = buildingPosition.row+""+buildingPosition.column; //moze u funkciju van fajla SVE ODOLE
+              document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${players.indexOf("bot")}`);
+            }
+          })
+        }
+        else if(move == 'BUILD_HOTEL'){
+          response.data.buildings.map((buildingPosition) => {
+            if(buildingPosition.type == "HOTEL"){ //MOZDA TREBA HOUSE
+              var idStr = buildingPosition.row+""+buildingPosition.column;
+              var selected = document.querySelector(`.btn-${idStr}`)
+              selected.textContent = "H";
+            }
+          })
+        }
+        
+        else if(move == 'BUILD_ROAD'){
+          let roadPosition = response.data.roads[0];
+          var roadId = roadPosition.row1+""+roadPosition.col1+""+roadPosition.row2+""+roadPosition.col2; //funkcija van fajla
+          console.log("BOT BUILT A ROAD : " + roadId);
+          document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${players.indexOf("bot")}`);
+        }
+        else if(move == 'BUY_CRAZY'){
+          Swal.fire({text: `Bot bought a wildcard`, timer: 1000});
+        }
+        else if(move == 'END_TURN'){
+          console.log('END_TURN');
+          let x = players.indexOf("bot") + 1;
+          if(x == players.length){
+            x = 0;
+          }
+          setPlayerToMove(x);
+          Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000});
+        }
+      })
     });
   }
 

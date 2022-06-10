@@ -80,8 +80,6 @@ rule "Offer player trade if missing resource"
             $m.addMove(MoveTypes.END_TURN);
             update($m);
         }
-        System.out.println("T T T T T");
-        System.out.println($wood + " " + $clay + " " + $grain + " " + $sheep + " " + $rock);
         Map<ResourceTypes, Integer> offer = new HashMap<>();
         Map<ResourceTypes, Integer> receive = new HashMap<>();
         List<ResourceTypes> excess = new ArrayList<>();
@@ -181,7 +179,6 @@ rule "Trade accepted"
         previousState.addResources(away);
         previousState.getResources().remove(key);
         $is.getPlayerStates().replace($m.trade.getAcceptedTrade().get(0), previousState);
-        System.out.println($is.getPlayerStates().get($m.trade.getAcceptedTrade().get(0)));
 
         $m.addMove(MoveTypes.EXECUTE_TRADE);
         update($is);
@@ -202,14 +199,13 @@ rule "Trade declined"
             $m.addMove(MoveTypes.END_TURN);
             update($m);
         }
-        System.out.println("Trejd odbijen");
+        System.out.println("Trade declined");
 
 end
 
 rule "End turn"
-    salience -1500
-    lock-on-active true
     no-loop
+    salience -1500
     when
         $is: InputState()
         $m: Move( moveList.get(moveList.size()-1) != MoveTypes.OFFER_TRADE_WITH_PLAYER && moveList.get(moveList.size()-1) != MoveTypes.END_TURN)
