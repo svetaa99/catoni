@@ -75,6 +75,11 @@ public class PositionController {
         return new ResponseEntity<>(inputState, HttpStatus.OK);
     }
 
+    @GetMapping(value="get-resources/{playerName}", produces = "application/json")
+    public ResponseEntity<List<ResourceTypes>> getResourcesToPlayer(@PathVariable String playerName){
+        return new ResponseEntity<>(inputState.getPlayerStates().get(playerName).getResources(), HttpStatus.OK);
+    }
+
     @PostMapping(value = "set-crazies/{playerName}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<InputState> addCraziesToPlayer(@PathVariable String playerName, @RequestBody List<CrazyTypes> crazies){
         State previousState = inputState.getPlayerStates().get(playerName);
@@ -82,6 +87,20 @@ public class PositionController {
         inputState.getPlayerStates().replace(playerName, previousState);
 
         return new ResponseEntity<>(inputState, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "add-crazy/{playerName}/{crazyType}", produces = "application/json")
+    public ResponseEntity<InputState> addCrazyToPlayer(@PathVariable String playerName, @PathVariable CrazyTypes crazyType){
+        State previousState = inputState.getPlayerStates().get(playerName);
+        previousState.getCraziesList().add(crazyType);
+        inputState.getPlayerStates().replace(playerName, previousState);
+
+        return new ResponseEntity<>(inputState, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "get-crazies/{playerName}", produces = "application/json")
+    public ResponseEntity<List<CrazyTypes>> addCrazyToPlayer(@PathVariable String playerName){
+        return new ResponseEntity<>(inputState.getPlayerStates().get(playerName).getCraziesList(), HttpStatus.OK);
     }
 
     @PutMapping(value = "update-resource-chances/{playerName}", consumes = "application/json", produces = "application/json")
