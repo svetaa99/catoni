@@ -5,6 +5,7 @@ import com.catoni.models.dto.*;
 import com.catoni.models.enums.BuildingTypes;
 import com.catoni.models.enums.CrazyTypes;
 import com.catoni.models.enums.ResourceTypes;
+import com.catoni.models.enums.Status;
 import com.catoni.services.PositionService;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,24 @@ public class PositionController {
         inputState.setResources(new ArrayList<>());
         inputState.setDistanceToHarbor(5); //TO DO: find harbor distance
 
+        return new ResponseEntity<>(inputState, HttpStatus.OK);
+    }
+
+    @PostMapping(value="add-resources-for-positions", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<InputState> addResourcesForPositions(@RequestBody List<ResourcesPositionsDto> resourcesPositions){
+        for(ResourcesPositionsDto el: resourcesPositions){
+           for(BuildingDto bDto: el.getPositions()){
+               for(Building b: inputState.getPosition().getBuildings()){
+                   if(b.equalsDto(bDto) && b.getStatus() == Status.TAKEN){
+                       String owner = b.getOwner();
+                       if(owner.equals("bot")){
+                           inputState.addResource(el.getResource()); // 2 ako ima hotel
+                       }
+                       inputState.getPlayerStates().get(owner).addResource(el.getResource());
+                   }
+               }
+           }
+        }
         return new ResponseEntity<>(inputState, HttpStatus.OK);
     }
 
@@ -110,16 +129,7 @@ public class PositionController {
     @PostMapping(value="building", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Building> addBuilding(@RequestBody BuildingDto building){
         Building b = position.addBuilding(building);
-        if(building.getType() == BuildingTypes.HOUSE){
-            int previousHouses = inputState.getPlayerStates().get(building.getPlayerName()).getNumberOfHouses();
-            inputState.getPlayerStates().get(building.getPlayerName()).setNumberOfHouses(previousHouses+1);
-        }
-        if(building.getType() == BuildingTypes.HOTEL){
-            int previousHouses = inputState.getPlayerStates().get(building.getPlayerName()).getNumberOfHouses();
-            int previousHotels = inputState.getPlayerStates().get(building.getPlayerName()).getNumberOfHotels();
-            inputState.getPlayerStates().get(building.getPlayerName()).setNumberOfHouses(previousHouses-1);
-            inputState.getPlayerStates().get(building.getPlayerName()).setNumberOfHotels(previousHotels+1);
-        }
+        service.updateInputStateAfterBuildingHouse(b);
 //        System.out.println(position);
         return new ResponseEntity<>(b, HttpStatus.OK);
     }

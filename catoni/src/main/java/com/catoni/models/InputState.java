@@ -94,6 +94,15 @@ public class InputState {
         return retVal;
     }
 
+    public void updateChances(String player, Building newBuilding){
+        Map<ResourceTypes, Double> oldChances = playerStates.get(player).getResourceChances();
+        List<ResourceChance> newChances = newBuilding.getChanceList();
+        for (ResourceChance rc: newChances) {
+            double oldChance = oldChances.get(rc.getType());
+            oldChances.replace(rc.getType(), oldChance + rc.getChance());
+        }
+    }
+
     public Position getPosition() {
         return position;
     }
@@ -137,6 +146,8 @@ public class InputState {
     public void addResources(List<ResourceTypes> resources){
         this.resources.addAll(resources);
     }
+
+    public void addResource(ResourceTypes resource) { this.resources.add(resource) ;}
 
     @Override
     public String toString() {

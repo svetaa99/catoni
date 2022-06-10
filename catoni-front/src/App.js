@@ -1,9 +1,10 @@
 import './App.css';
 import {useState, useEffect} from 'react';
 import axios from "axios";
-import { buildHouse, buildRoad, getStartingPosition, initChances, initState } from './axiosservice/axiosService';
-import { random } from './util/rng';
+import { addResourcesToPositions, buildHouse, buildRoad, getStartingPosition, initChances, initState } from './axiosservice/axiosService';
+import { getResourcesForNumber, random } from './util/rng';
 import Swal from 'sweetalert2';
+import { INIT_STATE } from './constants/inputstate';
 
 function App() {
 
@@ -11,7 +12,7 @@ function App() {
 
   const[players, setPlayers] = useState([]);
 
-  const[inputState, setInputState] = useState({});
+  const[inputState, setInputState] = useState(INIT_STATE);
 
   const[phase, setPhase] = useState("start");
 
@@ -25,7 +26,7 @@ function App() {
       var rIdStr = response.data.road.row1+""+response.data.road.col1+""+response.data.road.row2+""+response.data.road.col2;
       document.querySelector(`.road-${rIdStr}`).classList.add("road", `road-${rIdStr}`, `put-${playerToMove}`);
       setPlayerToMove(nextToMove(playerToMove));
-      Swal.fire({title:`${players[playerToMove + 1]} is on the move!` ,timer: 1000})
+      Swal.fire({title:`${players[playerToMove + 1]} is on the move!` ,timer: 1000});
     });
   }
 
@@ -68,9 +69,15 @@ function App() {
 
   function rollDice(e){
     e.preventDefault();
-    const dice1 = random()
-    const dice2 = random()
-    console.log(dice1+dice2);
+    const dice1 = random();
+    const dice2 = random();
+    const fallen = dice1 + dice2;
+    getResourcesForNumber(fallen, (resourcesPositions) => {
+      addResourcesToPositions(resourcesPositions, (response) => {
+        setInputState(response.data);
+      })
+    });
+    Swal.fire({title:`${fallen}` ,timer: 1000, showConfirmButton: false, width: '100px'});
   }
 
   function nextToMove(current){
@@ -96,7 +103,7 @@ function App() {
             document.querySelector(`.road-${rIdStr}`).classList.add("road", `road-${rIdStr}`, `put-${x}`);
             x = nextToMove(x);
             setPlayerToMove(x);
-            Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000})
+            Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000});
             return;
         });
       }
@@ -143,7 +150,26 @@ function App() {
   return (
     <>
     <div className="playersInfo">
-
+        {
+          players.map(p => {
+            return(
+              <div className={"card card-"+ players.indexOf(p)}>
+                <h3>{p}</h3>
+                <span className='cardInfo'>Roads: {inputState.playerStates[p].numberOfRoads}</span>
+                <br />
+                <span className='cardInfo'>Houses: {inputState.playerStates[p].numberOfHouses}</span>
+                <br />
+                <span className='cardInfo'>Hotels: {inputState.playerStates[p].numberOfHotels}</span>
+                <br />
+                <span className='cardInfo'>Knights: {inputState.playerStates[p].numberOfKnights}</span>
+                <br />
+                <span className='cardInfo'>Resources: {inputState.playerStates[p].resources.length}</span>
+                <br />
+                <span className='cardInfo'>Wildcards: {inputState.playerStates[p].craziesList.length}</span>
+              </div>
+            )
+          })
+        }
     </div>
     <div className="board">
       <button className="btn btn-00" value={{row: 0, column: 0, type: 0}} onClick={() => addBuilding(0, 0, 4)}></button>
@@ -308,11 +334,11 @@ function App() {
         <span className="number">10</span>
       </div>
       <div className="part part2">
-        <div className="shape pasture"></div>
+        <div className="shape stone"></div>
         <span className="number">6</span>
       </div>
       <div className="part part3">
-        <div className="shape stone"></div>
+        <div className="shape pasture"></div>
         <span className="number">10</span>
       </div>
 

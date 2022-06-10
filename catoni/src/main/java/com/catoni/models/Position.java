@@ -222,12 +222,9 @@ public class Position {
                 }
                 b.setStatus(Status.TAKEN);
                 b.setOwner(building.getPlayerName());
-                if(b.getType() == BuildingTypes.NONE){
-                    b.setType(BuildingTypes.HOUSE);
-                    findNearbyBuildings(b);
-                }
-                else if(b.getType() == BuildingTypes.HOUSE)
-                    b.setType(BuildingTypes.HOTEL);
+
+                InputState.getInstance().updateChances(building.getPlayerName(), b);
+
                 return b;
             }
         }

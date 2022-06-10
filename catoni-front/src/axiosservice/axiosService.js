@@ -14,6 +14,20 @@ export function getStartingPosition(callback=defaultCallback, errorCallback=defa
     });
 }
 
+export function addResourcesToPositions(dto, callback=defaultCallback, errorCallback=defaultErrorCallback){
+    axios
+    .post(`${API_URL}/position/add-resources-for-positions`, JSON.stringify(dto), 
+    {
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
 export function buildHouse(dto, callback=defaultCallback, errorCallback=defaultErrorCallback){
     axios
     .post(`${API_URL}/position/building`, dto)
@@ -112,18 +126,18 @@ export function initChances(callback=defaultCallback, errorCallback=defaultError
     "chances": [
         [{"type": 0, "chance": 0.0833}],
         [{"type": 0, "chance": 0.0833}],
-        [{"type": 0, "chance": 0.0833}, {"type": 4, "chance": 0.1389}],
-        [{"type": 4, "chance": 0.1389}],
-        [{"type": 4, "chance": 0.1389}, {"type": 2, "chance": 0.0833}],
-        [{"type": 2, "chance": 0.0833}],
-        [{"type": 2, "chance": 0.0833}],
+        [{"type": 0, "chance": 0.0833}, {"type": 2, "chance": 0.1389}],
+        [{"type": 2, "chance": 0.1389}],
+        [{"type": 2, "chance": 0.1389}, {"type": 4, "chance": 0.0833}],
+        [{"type": 4, "chance": 0.0833}],
+        [{"type": 4, "chance": 0.0833}],
 
         [{"type": 3, "chance": 0.1389}],
         [{"type": 3, "chance": 0.1389}, {"type": 0, "chance": 0.0833}],
         [{"type": 3, "chance": 0.1389}, {"type": 0, "chance": 0.0833}, {"type": 4, "chance": 0.1389}],
-        [{"type": 4, "chance": 0.1389}, {"type": 0, "chance": 0.0833}, {"type": 4, "chance": 0.1389}],
-        [{"type": 4, "chance": 0.1389}, {"type": 0, "chance": 0.1111}, {"type": 4, "chance": 0.1389}],
-        [{"type": 2, "chance": 0.0833}, {"type": 0, "chance": 0.1111}, {"type": 4, "chance": 0.1389}],
+        [{"type": 2, "chance": 0.1389}, {"type": 0, "chance": 0.0833}, {"type": 4, "chance": 0.1389}],
+        [{"type": 2, "chance": 0.1389}, {"type": 0, "chance": 0.1111}, {"type": 4, "chance": 0.1389}],
+        [{"type": 4, "chance": 0.0833}, {"type": 0, "chance": 0.1111}, {"type": 2, "chance": 0.1389}],
         [{"type": 2, "chance": 0.0833}, {"type": 1, "chance": 0.0556}, {"type": 0, "chance": 0.1111}],
         [{"type": 2, "chance": 0.0833}, {"type": 1, "chance": 0.0556}],
         [{"type": 1, "chance": 0.0556}],
