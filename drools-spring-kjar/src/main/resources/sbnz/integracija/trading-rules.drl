@@ -204,6 +204,137 @@ rule "Trade declined"
         update($m);
 end
 
+
+rule "Mairtime trade"
+    salience -80
+    when
+        $is: InputState()
+
+        Number($wood: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.WOOD) from $is.resources,
+            count($t)
+        )
+
+        Number($clay: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.CLAY) from $is.resources,
+            count($t)
+        )
+
+        Number($grain: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.GRAIN) from $is.resources,
+            count($t)
+        )
+
+
+        Number($sheep: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.SHEEP) from $is.resources,
+            count($t)
+        )
+
+
+        Number($rock: intValue) from accumulate(
+            ResourceTypes($t: this, $t == ResourceTypes.ROCK) from $is.resources,
+            count($t)
+        )
+
+        eval($wood >= 6 || $clay >= 6 || $rock >= 7 || $grain >= 6 || $sheep >= 5)
+
+        $m: Move()
+
+    then
+        int excessNeeded = 4;
+        if($is.getDistanceToHarbor() == 0){
+            excessNeeded = 3;
+        }
+
+        State botState = $is.getPlayerStates().get("bot");
+
+        ResourceTypes lowestChance = ResourceTypes.CLAY;
+        double lowest = 2;
+
+        for(Map.Entry<ResourceTypes,Double> rc: botState.getResourceChances().entrySet()){
+            ResourceTypes k = rc.getKey();
+            Double v = rc.getValue();
+            if(v < lowest){
+                lowest = v;
+                lowestChance = k;
+            }
+        }
+
+        System.out.println("Lowest chance of: " + lowest + " for resource: " + lowestChance);
+
+        if($sheep >= 5){
+            System.out.println("TOO MUCH SHEEP -> DO MAIRTIME TRADE");
+            $m.addMove(MoveTypes.OFFER_TRADE_WITH_BANK);
+            for(int i = 0; i < excessNeeded; i++){
+                botState.getResources().remove(ResourceTypes.SHEEP);
+            }
+            List<ResourceTypes> prev = botState.getResources();
+            prev.add(lowestChance);
+
+            $is.setResources(prev);
+
+            update($is);
+            update($m);
+        }
+        if($rock >= 7){
+            System.out.println("TOO MUCH ROCKS -> DO MAIRTIME TRADE");
+            $m.addMove(MoveTypes.OFFER_TRADE_WITH_BANK);
+            for(int i = 0; i < excessNeeded; i++){
+                botState.getResources().remove(ResourceTypes.ROCK);
+            }
+            List<ResourceTypes> prev = botState.getResources();
+            prev.add(lowestChance);
+
+            $is.setResources(prev);
+
+            update($is);
+            update($m);
+        }
+        if($grain >= 6){
+            System.out.println("TOO MUCH GRAIN -> DO MAIRTIME TRADE");
+            $m.addMove(MoveTypes.OFFER_TRADE_WITH_BANK);
+            for(int i = 0; i < excessNeeded; i++){
+                botState.getResources().remove(ResourceTypes.GRAIN);
+            }
+            List<ResourceTypes> prev = botState.getResources();
+            prev.add(lowestChance);
+
+            $is.setResources(prev);
+
+            update($is);
+            update($m);
+        }
+        if($wood >= 6){
+            System.out.println("TOO MUCH WOOD -> DO MAIRTIME TRADE");
+            $m.addMove(MoveTypes.OFFER_TRADE_WITH_BANK);
+            for(int i = 0; i < excessNeeded; i++){
+                botState.getResources().remove(ResourceTypes.WOOD);
+            }
+            List<ResourceTypes> prev = botState.getResources();
+            prev.add(lowestChance);
+
+            $is.setResources(prev);
+
+            update($is);
+            update($m);
+        }
+        if($clay >= 6){
+            System.out.println("TOO MUCH CLAY -> DO MAIRTIME TRADE");
+            $m.addMove(MoveTypes.OFFER_TRADE_WITH_BANK);
+            for(int i = 0; i < excessNeeded; i++){
+                botState.getResources().remove(ResourceTypes.ROCK);
+            }
+            List<ResourceTypes> prev = botState.getResources();
+            prev.add(lowestChance);
+
+            $is.setResources(prev);
+
+            update($is);
+            update($m);
+        }
+end
+
 rule "End turn"
     no-loop
     salience -1500
