@@ -192,6 +192,7 @@ rule "Trade declined"
         $is: InputState()
         $m: Move(moveList.get(moveList.size()-1) == MoveTypes.OFFER_TRADE_WITH_PLAYER && trade.getStatus() == TradeStatus.DECLINED)
     then
+        $m.addMove(MoveTypes.DECLINE_TRADE);
         int declineCount = Collections.frequency($m.moveList, MoveTypes.OFFER_TRADE_WITH_PLAYER);
         insert(new TradeDeclinedEvent(declineCount));
         insert($m.trade.getTradeOffer());
@@ -200,7 +201,7 @@ rule "Trade declined"
             update($m);
         }
         System.out.println("Trade declined");
-
+        update($m);
 end
 
 rule "End turn"

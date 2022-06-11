@@ -163,8 +163,8 @@ rule "Build Road"
 end
 
 rule "Buy Crazy if you have a lot rocks and grains"
+    lock-on-active true
     salience 1
-    no-loop
     when
 
         $is: InputState(

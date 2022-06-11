@@ -59,7 +59,6 @@ public class TradeOffer {
         return "TradeOffer{" +
                 "offer=" + offer +
                 ", receive=" + receive +
-                ", offeredAt=" + offeredAt +
                 '}';
     }
 }

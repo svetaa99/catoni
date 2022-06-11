@@ -8,18 +8,18 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-rule "Set points to 10"
+rule "Set points to 7"
   no-loop
   salience 10000000
   lock-on-active true
   when
     $gs: GlobalState()
-    eval(10 > 0)
+    eval(7 > 0)
     $is: InputState()
     $m: Move()
   then
-    modify($gs) { setPointsForWin(10)}
-    if ($is.getPlayerStates().get("bot").getTotalGamePoints("bot") >= 10) {
+    modify($gs) { setPointsForWin(7)}
+    if ($is.getPlayerStates().get("bot").getTotalGamePoints("bot") >= 7) {
       $m.addMove(MoveTypes.WIN_GAME);
     }
 end

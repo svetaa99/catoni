@@ -1,5 +1,6 @@
 package com.catoni.controllers;
 
+import com.catoni.exceptions.PositionNotAvailableException;
 import com.catoni.models.*;
 import com.catoni.models.dto.*;
 import com.catoni.models.enums.BuildingTypes;
@@ -70,7 +71,7 @@ public class PositionController {
         }
         State previousState = inputState.getPlayerStates().get(playerName);
         previousState.addResources(resources);
-        inputState.getPlayerStates().replace(playerName, previousState);
+        //inputState.getPlayerStates().replace(playerName, previousState);
 
         return new ResponseEntity<>(inputState, HttpStatus.OK);
     }
@@ -205,5 +206,15 @@ public class PositionController {
     @GetMapping(value="print-position")
     public void printPosition(){
         System.out.println(position);
+    }
+
+    @ExceptionHandler(PositionNotAvailableException.class)
+    public ResponseEntity<Error> positonNotAvailable(PositionNotAvailableException e){
+        return new ResponseEntity<>(new Error("Position is taken or blocked"), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Error> badRequest(Exception e){
+        return new ResponseEntity<>(new Error("Bad request"), HttpStatus.BAD_REQUEST);
     }
 }

@@ -43,4 +43,13 @@ public class Trade {
     public void setStatus(TradeStatus status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Trade{" +
+                "tradeOffer=" + tradeOffer +
+                ", acceptedTrade=" + acceptedTrade +
+                ", status=" + status +
+                '}';
+    }
 }
