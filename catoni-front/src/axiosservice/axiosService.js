@@ -116,6 +116,51 @@ export function getCraziesForPlayerName(playerName, callback=defaultCallback, er
     });
 }
 
+export function stealCardFromPlayer(currentPlayer, stealFrom, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .get(`${API_URL}/position/play-knight/${currentPlayer}/${stealFrom}`)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
+export function playMonopolyBE(currentPlayer, resource, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .get(`${API_URL}/position/play-monopoly/${currentPlayer}/${resource}`)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
+export function playYopBE(currentPlayer, resources, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .post(`${API_URL}/position/play-yop/${currentPlayer}`, resources)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
+export function playRB(currentPlayer, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .get(`${API_URL}/position/play-road-builder/${currentPlayer}`)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
+
 export function initState(playerCount, callback=defaultCallback, errorCallback=defaultErrorCallback){
 
     axios

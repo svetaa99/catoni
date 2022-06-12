@@ -1,7 +1,7 @@
 import './App.css';
 import {useState, useEffect, useCallback} from 'react';
 import axios from "axios";
-import { addCrazy, addResourcesToPositions, buildHouse, buildRoad, getCraziesForPlayerName, getResourcesForPlayerName, getStartingPosition, initChances, initState, setResourcesForPlayerName } from './axiosservice/axiosService';
+import { addCrazy, addResourcesToPositions, answerTrade, buildHouse, buildRoad, getCraziesForPlayerName, getMove, getResourcesForPlayerName, getStartingPosition, initChances, initState, playMonopolyBE, playRB, playYopBE, setResourcesForPlayerName, stealCardFromPlayer } from './axiosservice/axiosService';
 import { getResourcesForNumber, random } from './util/rng';
 import Swal from 'sweetalert2';
 import { INIT_STATE } from './constants/inputstate';
@@ -24,6 +24,8 @@ function App() {
   const [resourcesInHand, setResourcesInHand] = useState([]);
 
   const [craziesInHand, setCraziesInHand] = useState([]);
+
+  const [selectedCrazy, setSelectedCrazy] = useState(null);
 
   function startGame(){
     getStartingPosition((response) => {
@@ -106,20 +108,99 @@ function App() {
     });//catch
   }, [moveCounter, playerToMove, players, resourcesInHand])
 
-  function playKnight(e){
+  const playKnight = useCallback((e) =>{
+    const thirdPlayer = `${players[playerToMove] === "player1" ? "player2" : "player1" }`
+    Swal.fire({
+      title: 'Choose a player to steal a card',
+      showDenyButton: true,
+      showCancelButton: players.length > 3 ? true : false,
+      confirmButtonText: 'bot',
+      denyButtonText: thirdPlayer,
+      cancelButtonText: `player3`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        stealCardFromPlayer(players[playerToMove], "bot", (response) => {
+          setResourcesInHand(response.data.resources);
+          setCraziesInHand(response.data.crazies);
+        })
+      } else if (result.isDenied) {
+        stealCardFromPlayer(players[playerToMove], thirdPlayer, (response) => {
+          setResourcesInHand(response.data.resources);
+          setCraziesInHand(response.data.crazies);
+        })
+      } else if (result.isDismissed) {
+        stealCardFromPlayer(players[playerToMove], "player3", (response) => {
+          setResourcesInHand(response.data.resources);
+          setCraziesInHand(response.data.crazies);
+        })
+      }
+    })
+  }, [playerToMove, players])
 
-  }
+  const playMonopoly = useCallback(async (e) => {
+    const {value: resource} = await Swal.fire({
+      title: 'Choose a resource get from other players',
+      input: 'select',
+      inputOptions: {
+        "WOOD": "WOOD",
+        "CLAY": "CLAY",
+        "GRAIN": "GRAIN",
+        "SHEEP": "SHEEP",
+        "ROCK": "ROCK",
+      }
+    })
 
-  function playMonopoly(e){
+    if (resource) {
+      playMonopolyBE(players[playerToMove], resource, (response) => {
+        setResourcesInHand(response.data.resources);
+        setCraziesInHand(response.data.crazies);
+      })
+    }
+  }, [playerToMove, players])
 
-  }
+  const playYop = useCallback(async (e) => {
+    const {value: resource1} = await Swal.fire({
+      title: 'Choose a first resource to draw',
+      input: 'select',
+      inputOptions: {
+        "WOOD": "WOOD",
+        "CLAY": "CLAY",
+        "GRAIN": "GRAIN",
+        "SHEEP": "SHEEP",
+        "ROCK": "ROCK",
+      }
+    })
 
-  function playYop(e){
 
-  }
+
+    if (resource1) {
+      const {value: resource2} = await Swal.fire({
+        title: 'Choose a second resource to draw',
+        input: 'select',
+        inputOptions: {
+          "WOOD": "WOOD",
+          "CLAY": "CLAY",
+          "GRAIN": "GRAIN",
+          "SHEEP": "SHEEP",
+          "ROCK": "ROCK",
+        }
+      })
+
+      if (resource2) {
+        playYopBE(players[playerToMove], [resource1, resource2], (response) => {
+          setResourcesInHand(response.data.resources);
+          setCraziesInHand(response.data.crazies);
+        })
+      }
+    }
+  }, [playerToMove, players])
 
   function playRoadBuilder(e){
-
+    playRB(players[playerToMove], (response) => {
+      setResourcesInHand(response.data.resources);
+      setCraziesInHand(response.data.crazies);
+    })
   }
 
   function rollDice(e){
@@ -343,7 +424,33 @@ function App() {
         setCraziesInHand(resp.data);
       })
     }
-  }, [playerToMove, players, addBuilding, addRoad, buyCrazy, moveCounter])
+  }, [playerToMove, players, moveCounter])
+
+  const selectResource = (resource) => {
+    setSelectedCrazy(resource);
+  }
+
+  useEffect(() => {
+    switch(selectedCrazy) {
+      case "KNIGHT":
+        playKnight();
+        break;
+      case "MONOPOLY":
+        playMonopoly();
+        break;
+      case "ROAD_BUILDING":
+        playRoadBuilder();
+        break;
+      case "YEAR_OF_PLENTY":
+        playYop();
+        break;
+      default:
+        break;
+    }
+    const index = craziesInHand.findIndex(c => c === selectedCrazy);
+    craziesInHand.splice(index, 1);
+    setCraziesInHand([...craziesInHand]);
+  }, [selectedCrazy])
     
 
   return (
@@ -609,7 +716,7 @@ function App() {
       </div>
     </div>
     <div className="bottom">
-      <p>{printResourcesInHand([...resourcesInHand, ...craziesInHand])}</p>
+      <p>{printResourcesInHand([...resourcesInHand, ...craziesInHand], selectResource)}</p>
       {/* end turn build house build road build hotel play crazy */}
       <button className={players[0] == "bot" ? 'dice' : 'hidden'} onClick={startGame}>START GAME</button>
       <button className='dice' onClick={rollDice}>Roll dice</button>

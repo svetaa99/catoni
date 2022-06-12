@@ -9,15 +9,13 @@ import com.catoni.models.enums.ResourceTypes;
 import com.catoni.models.enums.Status;
 import com.catoni.services.PositionService;
 import org.apache.commons.lang3.NotImplementedException;
+import org.kie.api.io.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("position")
@@ -76,6 +74,61 @@ public class PositionController {
         return new ResponseEntity<>(inputState, HttpStatus.OK);
     }
 
+    @GetMapping(value="play-knight/{currentPlayerName}/{stealFrom}")
+    public ResponseEntity<ResourcesAndCraziesListsDTO> stealResoruce(@PathVariable String currentPlayerName, @PathVariable String stealFrom) {
+        List<ResourceTypes> stealFromResources = inputState.getPlayerStates().get(stealFrom).getResources();
+        Random rand = new Random();
+        int random = rand.nextInt(stealFromResources.size());
+        ResourceTypes stolenResource = stealFromResources.remove(random);
+        inputState.getPlayerStates().get(currentPlayerName).getResources().add(stolenResource);
+        inputState.getPlayerStates().get(currentPlayerName).getCraziesList().remove(CrazyTypes.KNIGHT);
+
+        return new ResponseEntity<>(new ResourcesAndCraziesListsDTO(inputState.getPlayerStates().get(currentPlayerName).getResources(),
+                inputState.getPlayerStates().get(currentPlayerName).getCraziesList()), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "play-monopoly/{currentPlayerName}/{resource}")
+    public ResponseEntity<ResourcesAndCraziesListsDTO> playMonopoly(@PathVariable String currentPlayerName, @PathVariable ResourceTypes resource) {
+        for (Map.Entry<String, State> entry : inputState.getPlayerStates().entrySet()) {
+            if (entry.getKey().equals(currentPlayerName)) {
+                continue;
+            }
+
+            List<ResourceTypes> resourceTypes = entry.getValue().getResources();
+            if (resourceTypes.contains(resource)) {
+                int numberOfResources = Collections.frequency(resourceTypes, resource);
+                resourceTypes.removeAll(Collections.singleton(resource));
+                for (int i = 0; i < numberOfResources; i++) {
+                    inputState.getPlayerStates().get(currentPlayerName).getResources().add(resource);
+                }
+            }
+        }
+
+        inputState.getPlayerStates().get(currentPlayerName).getCraziesList().remove(CrazyTypes.MONOPOLY);
+
+        return new ResponseEntity<>(new ResourcesAndCraziesListsDTO(inputState.getPlayerStates().get(currentPlayerName).getResources(),
+                inputState.getPlayerStates().get(currentPlayerName).getCraziesList()), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "play-yop/{currentPlayerName}")
+    public ResponseEntity<ResourcesAndCraziesListsDTO> playYop(@PathVariable String currentPlayerName, @RequestBody List<ResourceTypes> resources) {
+        inputState.getPlayerStates().get(currentPlayerName).getResources().addAll(resources);
+        inputState.getPlayerStates().get(currentPlayerName).getCraziesList().remove(CrazyTypes.YEAR_OF_PLENTY);
+
+        return new ResponseEntity<>(new ResourcesAndCraziesListsDTO(inputState.getPlayerStates().get(currentPlayerName).getResources(),
+                inputState.getPlayerStates().get(currentPlayerName).getCraziesList()), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "play-road-builder/{currentPlayerName}")
+    public ResponseEntity<ResourcesAndCraziesListsDTO> playRB(@PathVariable String currentPlayerName) {
+        inputState.getPlayerStates().get(currentPlayerName).getResources().addAll(Arrays.asList(ResourceTypes.CLAY, ResourceTypes.CLAY,
+                ResourceTypes.WOOD, ResourceTypes.WOOD));
+        inputState.getPlayerStates().get(currentPlayerName).getCraziesList().remove(CrazyTypes.ROAD_BUILDING);
+
+        return new ResponseEntity<>(new ResourcesAndCraziesListsDTO(inputState.getPlayerStates().get(currentPlayerName).getResources(),
+                inputState.getPlayerStates().get(currentPlayerName).getCraziesList()), HttpStatus.OK);
+    }
+
     @GetMapping(value="get-resources/{playerName}", produces = "application/json")
     public ResponseEntity<List<ResourceTypes>> getResourcesToPlayer(@PathVariable String playerName){
         return new ResponseEntity<>(inputState.getPlayerStates().get(playerName).getResources(), HttpStatus.OK);
@@ -122,27 +175,6 @@ public class PositionController {
         inputState.getPlayerStates().replace(playerName, previousState);
 
         return new ResponseEntity<>(inputState, HttpStatus.OK);
-    }
-
-    @GetMapping(value="play-knight/{playerName}/{playerToStealFrom}", produces = "application/json")
-    public ResponseEntity<InputState> playKnight(@PathVariable String playerName, @PathVariable String playerToStealFrom){
-        throw new NotImplementedException();
-    }
-
-    @GetMapping(value="play-yop/{playerName}")
-    public ResponseEntity<InputState> playYop(@PathVariable String playerName){
-        //MOZE I NA FRONTU PA SAMO ADD-RESOURCES
-        throw new NotImplementedException();
-    }
-
-    @GetMapping(value = "play-monopoly/{playerName}")
-    public ResponseEntity<InputState> playMonopoly(@PathVariable String playerName){
-        throw new NotImplementedException();
-    }
-
-    @GetMapping(value = "play-rb/{playerName}")
-    public ResponseEntity<InputState> playRoadBuilder(@PathVariable String playerName){
-        throw new NotImplementedException();
     }
 
     //POSITION MANIPULATION

@@ -1,4 +1,4 @@
-export const printResourcesInHand = (resources) => {
+export const printResourcesInHand = (resources, selectResource) => {
   const resSet = Array.from(new Set(resources))
   const map = resSet.map((r) => {
     return (
@@ -8,6 +8,7 @@ export const printResourcesInHand = (resources) => {
           height={90.5}
           src={`./${r.toLowerCase()}.jpg`}
           alt={`${r.toLowerCase()}`}
+          onClick={() => { selectResource(r)}}
         />{" "}
         X{" "}
         {resources.reduce((acc, curr) => {
