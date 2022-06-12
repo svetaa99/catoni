@@ -374,7 +374,10 @@ function App() {
         
       }
       else if(m == 'WIN_GAME'){
-        //CHANGE WINDOW LOCATION
+        Swal.fire({title: "BOT WON THE GAME!"})
+        .then(() => {
+          //query?
+        })
       }
       else if(m == 'OFFER_TRADE_WITH_PLAYER'){
         console.log(move.trade);
@@ -449,9 +452,6 @@ function App() {
         var roadId = roadPosition.row1+""+roadPosition.col1+""+roadPosition.row2+""+roadPosition.col2; //funkcija van fajla
         console.log("BOT BUILT A ROAD : " + roadId);
         document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${players.indexOf("bot")}`);
-      }
-      else if(m == 'BUY_CRAZY'){
-        Swal.fire({text: `Bot bought a wildcard`, timer: 2000});
       }
       else if(m == 'END_TURN'){
         console.log('END_TURN');
