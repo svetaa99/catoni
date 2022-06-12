@@ -40,72 +40,177 @@ function App() {
   }
 
   const addBuilding = useCallback((row, col, btnId) => {
-    buildHouse({row, col, playerName: players[playerToMove]}, (response) => {
-      //proveri da li je kuca ili hotel pa povecaj dugme
-      console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
-      var idStr = row+""+col;
-      document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
-      var selected = document.querySelector(`.btn-${idStr}`)
-      if(response.data.type == "HOTEL") {
-        selected.textContent = "H";
-        if (moveCounter >= players.length) {
-          let newResources = resourcesInHand;
-          const rockIndex = newResources.findIndex(r => r === "ROCK");
-          newResources.splice(rockIndex, 1);
-          const rockIndex1 = newResources.findIndex(r => r === "ROCK");
-          newResources.splice(rockIndex1, 1);
-          const rockIndex2 = newResources.findIndex(r => r === "ROCK");
-          newResources.splice(rockIndex2, 1);
-          const grainIndex = newResources.findIndex(r => r === "GRAIN");
-          newResources.splice(grainIndex, 1);
-          const grainIndex1 = newResources.findIndex(r => r === "GRAIN");
-          newResources.splice(grainIndex1, 1);
-          setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
-            if (response.status === 200) {
-              setResourcesInHand(newResources);
-            }
-          });
+    if (moveCounter <= 2) {
+      buildHouse({row, col, playerName: players[playerToMove]}, (response) => {
+        //proveri da li je kuca ili hotel pa povecaj dugme
+        console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
+        var idStr = row+""+col;
+        document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
+        var selected = document.querySelector(`.btn-${idStr}`)
+        if(response.data.type == "HOTEL") {
+          selected.textContent = "H";
+          if (moveCounter >= players.length) {
+            let newResources = resourcesInHand;
+            const rockIndex = newResources.findIndex(r => r === "ROCK");
+            newResources.splice(rockIndex, 1);
+            const rockIndex1 = newResources.findIndex(r => r === "ROCK");
+            newResources.splice(rockIndex1, 1);
+            const rockIndex2 = newResources.findIndex(r => r === "ROCK");
+            newResources.splice(rockIndex2, 1);
+            const grainIndex = newResources.findIndex(r => r === "GRAIN");
+            newResources.splice(grainIndex, 1);
+            const grainIndex1 = newResources.findIndex(r => r === "GRAIN");
+            newResources.splice(grainIndex1, 1);
+            setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+              if (response.status === 200) {
+                getResourcesForPlayerName(players[playerToMove], (response) => {
+                  const resources = response.data;
+                  setResourcesInHand(resources)
+                })
+                getCraziesForPlayerName(players[playerToMove], (resp) => {
+                  setCraziesInHand(resp.data);
+                })
+              }
+            });
+          }
+        } else {
+          if (moveCounter >= players.length) {
+            let newResources = resourcesInHand;
+            const woodIndex = newResources.findIndex(r => r === "WOOD");
+            newResources.splice(woodIndex, 1);
+            const clayIndex = newResources.findIndex(r => r === "CLAY");
+            newResources.splice(clayIndex, 1);
+            const grainIndex = newResources.findIndex(r => r === "GRAIN");
+            newResources.splice(grainIndex, 1);
+            const sheepIndex = newResources.findIndex(r => r === "SHEEP");
+            newResources.splice(sheepIndex, 1);
+            setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+              if (response.status === 200) {
+                getResourcesForPlayerName(players[playerToMove], (response) => {
+                  const resources = response.data;
+                  setResourcesInHand(resources)
+                })
+                getCraziesForPlayerName(players[playerToMove], (resp) => {
+                  setCraziesInHand(resp.data);
+                })
+              }
+            });
+          }
         }
-      } else {
+      });//catch
+    } else {
+      if (checker(resourcesInHand, ["WOOD", "CLAY", "GRAIN", "SHEEP"]) || checker(resourcesInHand, ["ROCK", "ROCK", "ROCK", "GRAIN", "GRAIN"])) {
+        buildHouse({row, col, playerName: players[playerToMove]}, (response) => {
+          //proveri da li je kuca ili hotel pa povecaj dugme
+          console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
+          var idStr = row+""+col;
+          document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
+          var selected = document.querySelector(`.btn-${idStr}`)
+          if(response.data.type == "HOTEL") {
+            selected.textContent = "H";
+            if (moveCounter >= players.length) {
+              let newResources = resourcesInHand;
+              const rockIndex = newResources.findIndex(r => r === "ROCK");
+              newResources.splice(rockIndex, 1);
+              const rockIndex1 = newResources.findIndex(r => r === "ROCK");
+              newResources.splice(rockIndex1, 1);
+              const rockIndex2 = newResources.findIndex(r => r === "ROCK");
+              newResources.splice(rockIndex2, 1);
+              const grainIndex = newResources.findIndex(r => r === "GRAIN");
+              newResources.splice(grainIndex, 1);
+              const grainIndex1 = newResources.findIndex(r => r === "GRAIN");
+              newResources.splice(grainIndex1, 1);
+              setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+                if (response.status === 200) {
+                  getResourcesForPlayerName(players[playerToMove], (response) => {
+                    const resources = response.data;
+                    setResourcesInHand(resources)
+                  })
+                  getCraziesForPlayerName(players[playerToMove], (resp) => {
+                    setCraziesInHand(resp.data);
+                  })
+                }
+              });
+            }
+          } else {
+            if (moveCounter >= players.length) {
+              let newResources = resourcesInHand;
+              const woodIndex = newResources.findIndex(r => r === "WOOD");
+              newResources.splice(woodIndex, 1);
+              const clayIndex = newResources.findIndex(r => r === "CLAY");
+              newResources.splice(clayIndex, 1);
+              const grainIndex = newResources.findIndex(r => r === "GRAIN");
+              newResources.splice(grainIndex, 1);
+              const sheepIndex = newResources.findIndex(r => r === "SHEEP");
+              newResources.splice(sheepIndex, 1);
+              setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+                if (response.status === 200) {
+                  getResourcesForPlayerName(players[playerToMove], (response) => {
+                    const resources = response.data;
+                    setResourcesInHand(resources)
+                  })
+                  getCraziesForPlayerName(players[playerToMove], (resp) => {
+                    setCraziesInHand(resp.data);
+                  })
+                }
+              });
+            }
+          }
+        });//catch
+      }
+    }
+  }, [moveCounter, playerToMove, players, resourcesInHand])
+
+  let checker = (arr, target) => target.every(v => arr.includes(v));
+
+  const addRoad = useCallback((row1, col1, row2, col2) => {
+    if (moveCounter <= 2) {
+      buildRoad({row1, col1, row2, col2, player: players[playerToMove]}, (response) => {
+        var roadId = row1+""+col1+""+row2+""+col2; //funkcija van fajla
+        console.log(playerToMove + " BUILT A ROAD : " + roadId);
+        document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${playerToMove}`);
         if (moveCounter >= players.length) {
           let newResources = resourcesInHand;
           const woodIndex = newResources.findIndex(r => r === "WOOD");
           newResources.splice(woodIndex, 1);
           const clayIndex = newResources.findIndex(r => r === "CLAY");
           newResources.splice(clayIndex, 1);
-          const grainIndex = newResources.findIndex(r => r === "GRAIN");
-          newResources.splice(grainIndex, 1);
-          const sheepIndex = newResources.findIndex(r => r === "SHEEP");
-          newResources.splice(sheepIndex, 1);
           setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
-            if (response.status === 200) {
-              setResourcesInHand(newResources);
-            }
+            getResourcesForPlayerName(players[playerToMove], (response) => {
+              const resources = response.data;
+              setResourcesInHand(resources)
+            })
+            getCraziesForPlayerName(players[playerToMove], (resp) => {
+              setCraziesInHand(resp.data);
+            })
           });
         }
+      });//catch
+    } else {
+      if (checker(resourcesInHand, ["WOOD", "CLAY"])) {
+        buildRoad({row1, col1, row2, col2, player: players[playerToMove]}, (response) => {
+          var roadId = row1+""+col1+""+row2+""+col2; //funkcija van fajla
+          console.log(playerToMove + " BUILT A ROAD : " + roadId);
+          document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${playerToMove}`);
+          if (moveCounter >= players.length) {
+            let newResources = resourcesInHand;
+            const woodIndex = newResources.findIndex(r => r === "WOOD");
+            newResources.splice(woodIndex, 1);
+            const clayIndex = newResources.findIndex(r => r === "CLAY");
+            newResources.splice(clayIndex, 1);
+            setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+              getResourcesForPlayerName(players[playerToMove], (response) => {
+                const resources = response.data;
+                setResourcesInHand(resources)
+              })
+              getCraziesForPlayerName(players[playerToMove], (resp) => {
+                setCraziesInHand(resp.data);
+              })
+            });
+          }
+        });//catch
       }
-
-      
-    });//catch
-  }, [moveCounter, playerToMove, players, resourcesInHand])
-
-  const addRoad = useCallback((row1, col1, row2, col2) => {
-    buildRoad({row1, col1, row2, col2, player: players[playerToMove]}, (response) => {
-      var roadId = row1+""+col1+""+row2+""+col2; //funkcija van fajla
-      console.log(playerToMove + " BUILT A ROAD : " + roadId);
-      document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${playerToMove}`);
-      if (moveCounter >= players.length) {
-        let newResources = resourcesInHand;
-        const woodIndex = newResources.findIndex(r => r === "WOOD");
-        newResources.splice(woodIndex, 1);
-        const clayIndex = newResources.findIndex(r => r === "CLAY");
-        newResources.splice(clayIndex, 1);
-        console.log("REMOVING ROAD RESOURCES");
-        setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
-          setResourcesInHand(newResources);
-        });
-      }
-    });//catch
+    }
   }, [moveCounter, playerToMove, players, resourcesInHand])
 
   const playKnight = useCallback((e) =>{
@@ -171,8 +276,6 @@ function App() {
         "ROCK": "ROCK",
       }
     })
-
-
 
     if (resource1) {
       const {value: resource2} = await Swal.fire({
@@ -375,7 +478,17 @@ function App() {
     newResources.splice(grainIndex, 1);
     const sheepIndex = newResources.findIndex(r => r === "SHEEP");
     newResources.splice(sheepIndex, 1);
-    setResourcesForPlayerName(players[playerToMove], newResources);
+    setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+      if (response.status === 200) {
+        getResourcesForPlayerName(players[playerToMove], (response) => {
+          const resources = response.data;
+          setResourcesInHand(resources)
+        })
+        getCraziesForPlayerName(players[playerToMove], (resp) => {
+          setCraziesInHand(resp.data);
+        })
+      }
+    });
   }, [playerToMove, players, resourcesInHand])
 
   useEffect(() => {
@@ -447,9 +560,11 @@ function App() {
       default:
         break;
     }
-    const index = craziesInHand.findIndex(c => c === selectedCrazy);
-    craziesInHand.splice(index, 1);
-    setCraziesInHand([...craziesInHand]);
+    if (selectedCrazy !== "VICTORY_POINT") {
+      const index = craziesInHand.findIndex(c => c === selectedCrazy);
+      craziesInHand.splice(index, 1);
+      setCraziesInHand([...craziesInHand]);
+    }
   }, [selectedCrazy])
     
 
