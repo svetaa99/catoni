@@ -72,6 +72,17 @@ export function getResourcesForPlayerName(playerName, callback=defaultCallback, 
     });
 }
 
+export function setResourcesForPlayerName(playerName, resources, callback=defaultCallback, errorCallback=defaultErrorCallback) {
+    axios
+    .post(`${API_URL}/position/set-resources/${playerName}`, resources)
+    .then(response => {
+        callback(response);
+    })
+    .catch(error => {
+        errorCallback(error);
+    });
+}
+
 export function getCraziesForPlayerName(playerName, callback=defaultCallback, errorCallback=defaultErrorCallback) {
     axios
     .get(`${API_URL}/position/get-crazies/${playerName}`)

@@ -1,7 +1,7 @@
 import './App.css';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import axios from "axios";
-import { addCrazy, addResourcesToPositions, buildHouse, buildRoad, getCraziesForPlayerName, getResourcesForPlayerName, getStartingPosition, initChances, initState } from './axiosservice/axiosService';
+import { addCrazy, addResourcesToPositions, buildHouse, buildRoad, getCraziesForPlayerName, getResourcesForPlayerName, getStartingPosition, initChances, initState, setResourcesForPlayerName } from './axiosservice/axiosService';
 import { getResourcesForNumber, random } from './util/rng';
 import Swal from 'sweetalert2';
 import { INIT_STATE } from './constants/inputstate';
@@ -21,7 +21,9 @@ function App() {
 
   const [moveCounter, setMoveCounter] = useState(1);
 
-  const [resourcesInHand, setResourcesInHand] = useState([])
+  const [resourcesInHand, setResourcesInHand] = useState([]);
+
+  const [craziesInHand, setCraziesInHand] = useState([]);
 
   function startGame(){
     getStartingPosition((response) => {
@@ -35,7 +37,7 @@ function App() {
     });
   }
 
-  function addBuilding(row, col, btnId){
+  const addBuilding = useCallback((row, col, btnId) => {
     buildHouse({row, col, playerName: players[playerToMove], type: 1}, (response) => {
       //proveri da li je kuca ili hotel pa povecaj dugme
       console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
@@ -43,18 +45,67 @@ function App() {
       console.log("FARBAJ NA: " + idStr);
       document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
       var selected = document.querySelector(`.btn-${idStr}`)
-      if(response.data.type == 2)
+      if(response.data.type == 2) {
         selected.textContent = "H";
-    });//catch
-  }
+        if (moveCounter >= players.length) {
+          let newResources = resourcesInHand;
+          const rockIndex = newResources.findIndex(r => r === "ROCK");
+          newResources.splice(rockIndex, 1);
+          const rockIndex1 = newResources.findIndex(r => r === "ROCK");
+          newResources.splice(rockIndex1, 1);
+          const rockIndex2 = newResources.findIndex(r => r === "ROCK");
+          newResources.splice(rockIndex2, 1);
+          const grainIndex = newResources.findIndex(r => r === "GRAIN");
+          newResources.splice(grainIndex, 1);
+          const grainIndex1 = newResources.findIndex(r => r === "GRAIN");
+          newResources.splice(grainIndex1, 1);
+          setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+            if (response.status === 200) {
+              setResourcesInHand(newResources);
+            }
+          });
+        }
+      } else {
+        if (moveCounter >= players.length) {
+          let newResources = resourcesInHand;
+          const woodIndex = newResources.findIndex(r => r === "WOOD");
+          newResources.splice(woodIndex, 1);
+          const clayIndex = newResources.findIndex(r => r === "CLAY");
+          newResources.splice(clayIndex, 1);
+          const grainIndex = newResources.findIndex(r => r === "GRAIN");
+          newResources.splice(grainIndex, 1);
+          const sheepIndex = newResources.findIndex(r => r === "SHEEP");
+          newResources.splice(sheepIndex, 1);
+          setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+            if (response.status === 200) {
+              setResourcesInHand(newResources);
+            }
+          });
+        }
+      }
 
-  function addRoad(row1, col1, row2, col2){
+      
+    });//catch
+  }, [moveCounter, playerToMove, players, resourcesInHand])
+
+  const addRoad = useCallback((row1, col1, row2, col2) => {
     buildRoad({row1, col1, row2, col2, player: players[playerToMove]}, (response) => {
       var roadId = row1+""+col1+""+row2+""+col2;
       console.log(playerToMove + " BUILT A ROAD : " + roadId);
       document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${playerToMove}`);
+      if (moveCounter >= players.length) {
+        let newResources = resourcesInHand;
+        const woodIndex = newResources.findIndex(r => r === "WOOD");
+        newResources.splice(woodIndex, 1);
+        const clayIndex = newResources.findIndex(r => r === "CLAY");
+        newResources.splice(clayIndex, 1);
+        console.log("REMOVING ROAD RESOURCES");
+        setResourcesForPlayerName(players[playerToMove], newResources, (response) => {
+          setResourcesInHand(newResources);
+        });
+      }
     });//catch
-  }
+  }, [moveCounter, playerToMove, players, resourcesInHand])
 
   function playKnight(e){
 
@@ -118,12 +169,21 @@ function App() {
     });
   }
 
-  const buyCrazy = (e) => {
+  const buyCrazy = useCallback((e) => {
     e.preventDefault();
     const randomNumber = random(0, 24);
     const pickedCrazy = shuffle(CRAZIES_LIST)[randomNumber];
     addCrazy(players[playerToMove], pickedCrazy);
-  }
+    
+    let newResources = resourcesInHand;
+    const rockIndex = newResources.findIndex(r => r === "ROCK");
+    newResources.splice(rockIndex, 1);
+    const grainIndex = newResources.findIndex(r => r === "GRAIN");
+    newResources.splice(grainIndex, 1);
+    const sheepIndex = newResources.findIndex(r => r === "SHEEP");
+    newResources.splice(sheepIndex, 1);
+    setResourcesForPlayerName(players[playerToMove], newResources);
+  }, [playerToMove, players, resourcesInHand])
 
   useEffect(() => {
     //GET-INPUT-STATE (bcs of reload)|| INIT-INPUT-STATE + INIT-POSITION
@@ -164,12 +224,12 @@ function App() {
   useEffect(() => {
     getResourcesForPlayerName(players[playerToMove], (response) => {
       const resources = response.data;
-      getCraziesForPlayerName(players[playerToMove], (resp) => {
-        setResourcesInHand([...resources, ...resp.data])
-      })
+      setResourcesInHand(resources)
     })
-  }, [playerToMove, players])
-
+    getCraziesForPlayerName(players[playerToMove], (resp) => {
+      setCraziesInHand(resp.data);
+    })
+  }, [playerToMove, players, addBuilding, addRoad, buyCrazy])
 
   return (
     <>
@@ -434,7 +494,7 @@ function App() {
       </div>
     </div>
     <div className="bottom">
-      <p>{printResourcesInHand(resourcesInHand)}</p>
+      <p>{printResourcesInHand([...resourcesInHand, ...craziesInHand])}</p>
       {/* end turn build house build road build hotel play crazy */}
       <button className={players[0] == "bot" ? 'dice' : 'hidden'} onClick={startGame}>START GAME</button>
       <button className='dice' onClick={rollDice}>Roll dice</button>

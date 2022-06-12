@@ -80,6 +80,13 @@ public class PositionController {
         return new ResponseEntity<>(inputState.getPlayerStates().get(playerName).getResources(), HttpStatus.OK);
     }
 
+    @PostMapping(value="set-resources/{playerName}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<List<ResourceTypes>> setResourcesToPlayer(@PathVariable String playerName, @RequestBody List<ResourceTypes> resources){
+        inputState.getPlayerStates().get(playerName).setResources(resources);
+        List<ResourceTypes> resourceTypes = inputState.getPlayerStates().get(playerName).getResources();
+        return new ResponseEntity<>(resourceTypes, HttpStatus.OK);
+    }
+
     @PostMapping(value = "set-crazies/{playerName}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<InputState> addCraziesToPlayer(@PathVariable String playerName, @RequestBody List<CrazyTypes> crazies){
         State previousState = inputState.getPlayerStates().get(playerName);
