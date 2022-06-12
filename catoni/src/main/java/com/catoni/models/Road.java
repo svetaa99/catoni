@@ -57,6 +57,8 @@ public class Road {
                 ", col2=" + col2 +
                 ", owner='" + owner + '\'' +
                 ", status=" + status +
+                ", b1 = " + building1 +
+                ", b2 = " + building2 +
                 '}' + '\n';
     }
 

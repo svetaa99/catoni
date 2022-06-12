@@ -44,7 +44,7 @@ end
 rule "Available hotel position"
   lock-on-active true
   no-loop
-  salience 100
+  salience 99
   when
     $is: InputState()
 
@@ -73,7 +73,7 @@ end
 rule "Available road position"
   lock-on-active true
   no-loop
-  salience 100
+  salience 98
   when
     $is: InputState()
 

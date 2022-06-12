@@ -28,7 +28,7 @@ function App() {
   function startGame(){
     getStartingPosition((response) => {
       console.log(response.data);
-      var idStr = response.data.building.row+""+response.data.building.col;
+      var idStr = response.data.building.row+""+response.data.building.col; //moze u funkciju van fajla
       document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
       var rIdStr = response.data.road.row1+""+response.data.road.col1+""+response.data.road.row2+""+response.data.road.col2;
       document.querySelector(`.road-${rIdStr}`).classList.add("road", `road-${rIdStr}`, `put-${playerToMove}`);
@@ -38,14 +38,13 @@ function App() {
   }
 
   const addBuilding = useCallback((row, col, btnId) => {
-    buildHouse({row, col, playerName: players[playerToMove], type: 1}, (response) => {
+    buildHouse({row, col, playerName: players[playerToMove]}, (response) => {
       //proveri da li je kuca ili hotel pa povecaj dugme
       console.log(playerToMove + " BUILT ON POSITION : " + row + "-" + col);
       var idStr = row+""+col;
-      console.log("FARBAJ NA: " + idStr);
       document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${playerToMove}`);
       var selected = document.querySelector(`.btn-${idStr}`)
-      if(response.data.type == 2) {
+      if(response.data.type == "HOTEL") {
         selected.textContent = "H";
         if (moveCounter >= players.length) {
           let newResources = resourcesInHand;
@@ -90,7 +89,7 @@ function App() {
 
   const addRoad = useCallback((row1, col1, row2, col2) => {
     buildRoad({row1, col1, row2, col2, player: players[playerToMove]}, (response) => {
-      var roadId = row1+""+col1+""+row2+""+col2;
+      var roadId = row1+""+col1+""+row2+""+col2; //funkcija van fajla
       console.log(playerToMove + " BUILT A ROAD : " + roadId);
       document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${playerToMove}`);
       if (moveCounter >= players.length) {
@@ -131,6 +130,9 @@ function App() {
     getResourcesForNumber(fallen, (resourcesPositions) => {
       addResourcesToPositions(resourcesPositions, (response) => {
         setInputState(response.data);
+        getResourcesForPlayerName(players[playerToMove], (response) => {
+          setResourcesInHand(response.data);
+        })
       })
     });
     Swal.fire({title:`${fallen}` ,timer: 1000, showConfirmButton: false, width: '100px'});
@@ -148,10 +150,11 @@ function App() {
     e.preventDefault();
     var x = nextToMove(playerToMove);
     Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000}).then(()=>{
-      var y = players[0] == "bot" ? moveCounter+1: moveCounter;
-      if(players[x] == "bot" && y <= 2){
-        console.log("Potez: " + moveCounter);
-        getStartingPosition((response) => {
+      var y = players[0] == "bot" ? moveCounter + 1: moveCounter;
+      console.log("Potez: " + y);
+      if(players[x] == "bot"){
+        if(y <= 2){
+          getStartingPosition((response) => {
             console.log(response.data);
             let idStr = response.data.building.row + "" + response.data.building.col
             document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${x}`);
@@ -161,12 +164,121 @@ function App() {
             setPlayerToMove(x);
             Swal.fire({title:`${players[x]} is on the move!` ,timer: 1000});
             return;
-        });
+          });
+        }
+        else{
+          rollDice(e);
+          botToMove();
+        }
       }
       else{
         setPlayerToMove(x);
       }
     });
+  }
+
+  function botToMove(){
+    getMove(response => {
+      moveHandler(response.data.moveList, response.data);
+    });
+  }
+
+  function moveHandler(moveList, move){ //EXPORT THIS FUNCTION TO ANOTHER FILE -> SHOULD
+    console.log(moveList);
+    moveList.map(m => {
+      if(m == 'START_TURN'){
+        
+      }
+      else if(m == 'WIN_GAME'){
+        //CHANGE WINDOW LOCATION
+      }
+      else if(m == 'OFFER_TRADE_WITH_PLAYER'){
+        console.log(move.trade);
+        var acceptedTrade = [];
+        var askedResource = Object.keys(move.trade.tradeOffer.receive)[0];
+        var offeredResources = Object.keys(move.trade.tradeOffer.offer);
+        console.log(offeredResources);
+        players.map(p => {
+          if(p != "bot"){
+            getResourcesForPlayerName(p, (resources) => {
+              var isEligible = false;
+              console.log(`ITERATING THROUGH LIST OF ${p}'S RESOURCES`);
+              resources.data.map(res => {
+                // console.log(`${res} == ${askedResource}`);
+                if(res == askedResource){
+                  isEligible = true;
+                  console.log(`${p} IS ELIGIBLE FOR THE TRADE!`);
+                }
+              })
+              if(isEligible){
+                Swal.fire({text: `${p} do you accept the trade? YOU GET: ${offeredResources} FOR ${askedResource}`, showCancelButton:true, confirmButtonText: "Yes", cancelButtonText: "No"})
+                  .then((result) => {
+                    if(result.isConfirmed){
+                      acceptedTrade.push(p);
+                      console.log({... move.trade, acceptedTrade, status: "ACCEPTED"});
+                      answerTrade({... move.trade, acceptedTrade, status: "ACCEPTED"}, (r) => {
+                        console.log("ACCEPT TRADE");
+                        console.log(r.data);
+                        let moveListAfterAccepting = r.data.moveList.slice(r.data.moveList.indexOf("EXECUTE_TRADE"));
+                        moveHandler(moveListAfterAccepting, r.data); //find parameters from EXCECUTE TRADE ONWARD
+                      });
+                    }
+                    else if(result.isDismissed){
+                      answerTrade({ tradeOffer: move.trade.tradeOffer, status: "DECLINED"}, (r) => {
+                        console.log("DECLINE TRADE");
+                        console.log(r.data.moveList);
+                        let moveListAfterDeclining = r.data.moveList.slice(r.data.moveList.indexOf("DECLINE_TRADE"));
+                        moveHandler(moveListAfterDeclining, r.data);
+                      }, (err) => {
+                          let x = nextToMove(players.indexOf("bot"));
+                          setPlayerToMove(x);
+                          Swal.fire({title:`${players[x]} is on the move!` ,timer: 2000});
+                      });
+                    }
+                  });
+                }
+            })
+          }
+        })
+      }
+      else if(m == 'BUILD_HOUSE'){
+        // let buildingPosition = response.data.buildings[0];
+        move.buildings.map((buildingPosition) =>{
+          if(buildingPosition.type == "NONE" && buildingPosition.status == "TAKEN"){
+            var idStr = buildingPosition.row+""+buildingPosition.column; //moze u funkciju van fajla SVE ODOLE
+            document.querySelector(`.btn-${idStr}`).classList.add("btn", `btn-${idStr}`, `kuca-${players.indexOf("bot")}`);
+          }
+        })
+      }
+      else if(m == 'BUILD_HOTEL'){
+        move.buildings.map((buildingPosition) => {
+          if(buildingPosition.type == "HOTEL"){ //MOZDA TREBA HOUSE
+            var idStr = buildingPosition.row+""+buildingPosition.column;
+            var selected = document.querySelector(`.btn-${idStr}`)
+            selected.textContent = "H";
+          }
+        })
+      }
+      
+      else if(m == 'BUILD_ROAD'){
+        let roadPosition = move.roads[0];
+        var roadId = roadPosition.row1+""+roadPosition.col1+""+roadPosition.row2+""+roadPosition.col2; //funkcija van fajla
+        console.log("BOT BUILT A ROAD : " + roadId);
+        document.querySelector(`.road-${roadId}`).classList.add("road", `road-${roadId}`, `put-${players.indexOf("bot")}`);
+      }
+      else if(m == 'BUY_CRAZY'){
+        Swal.fire({text: `Bot bought a wildcard`, timer: 2000});
+      }
+      else if(m == 'END_TURN'){
+        console.log('END_TURN');
+        let x = players.indexOf("bot") + 1;
+        if(x == players.length){
+          x = 0;
+        }
+        setPlayerToMove(x);
+        Swal.fire({title:`${players[x]} is on the move!` ,timer: 2000});
+      }
+    })
   }
 
   const buyCrazy = useCallback((e) => {
@@ -222,14 +334,17 @@ function App() {
 
 
   useEffect(() => {
-    getResourcesForPlayerName(players[playerToMove], (response) => {
-      const resources = response.data;
-      setResourcesInHand(resources)
-    })
-    getCraziesForPlayerName(players[playerToMove], (resp) => {
-      setCraziesInHand(resp.data);
-    })
-  }, [playerToMove, players, addBuilding, addRoad, buyCrazy])
+    if(moveCounter > 1) {
+      getResourcesForPlayerName(players[playerToMove], (response) => {
+        const resources = response.data;
+        setResourcesInHand(resources)
+      })
+      getCraziesForPlayerName(players[playerToMove], (resp) => {
+        setCraziesInHand(resp.data);
+      })
+    }
+  }, [playerToMove, players, addBuilding, addRoad, buyCrazy, moveCounter])
+    
 
   return (
     <>
@@ -237,7 +352,7 @@ function App() {
         {
           players.map(p => {
             return(
-              <div className={"card card-"+ players.indexOf(p)}>
+              <div className={"card card-"+ players.indexOf(p)} key={p}>
                 <h3>{p}</h3>
                 <span className='cardInfo'>Roads: {inputState.playerStates[p].numberOfRoads}</span>
                 <br />

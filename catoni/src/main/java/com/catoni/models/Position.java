@@ -71,7 +71,7 @@ public class Position {
                             colIndex = col;
                         Road roadDown = new Road(row, col, row + 1, colIndex, "null", Status.FREE);
                         roadDown.setBuilding1(new Building(row, col, calculateHarbor(row, col), "null", BuildingTypes.NONE, Status.FREE));
-                        roadDown.setBuilding2(new Building(row, colIndex, calculateHarbor(row + 1, colIndex), "null", BuildingTypes.NONE, Status.FREE));
+                        roadDown.setBuilding2(new Building(row+1, colIndex, calculateHarbor(row + 1, colIndex), "null", BuildingTypes.NONE, Status.FREE));
 
                         if (col != maxColForRow(row)){
                             roads.add(roadRight);
@@ -202,10 +202,10 @@ public class Position {
 
     public Building addBuilding(BuildingDto building){
         //SET ONE TO TAKEN AND ALL WITH DISTANCE = 1 TO BLOCKED(2 or 3)
-        System.out.println("ZAUZIMAMO");
+
         for (Building b: buildings){
             if(b.equalsDto(building)){
-                for(Road r: roads){
+                for(Road r: roads){ //SET B1 AND B2 FOR ROAD
                     if(r.getBuilding1().equals(b)) {
                         Building bld = r.getBuilding1();
                         bld.setStatus(Status.TAKEN);
@@ -218,13 +218,18 @@ public class Position {
                     }
                 }
                 if(b.getStatus() != Status.FREE){
-                    throw new PositionNotAvailableException();
+                    if(!b.getOwner().equals(building.getPlayerName()) || b.getType() == BuildingTypes.HOTEL)
+                        throw new PositionNotAvailableException();
                 }
                 b.setStatus(Status.TAKEN);
                 b.setOwner(building.getPlayerName());
-
+                if(b.getType() == BuildingTypes.NONE)
+                    b.setType(BuildingTypes.HOUSE);
+                else if(b.getType() == BuildingTypes.HOUSE)
+                    b.setType(BuildingTypes.HOTEL);
                 InputState.getInstance().updateChances(building.getPlayerName(), b);
 
+                findNearbyBuildings(b);
                 return b;
             }
         }
@@ -289,10 +294,6 @@ public class Position {
     }
 
     public Road getRoadTowardsBuilding(BuildingDto start, Building end){
-        System.out.println("OD");
-        System.out.println(start);
-        System.out.println("DO");
-        System.out.println(end);
         List<Building> connections = new ArrayList<>();
         for (Road r : roads){
             if(r.getBuilding1().equals(end))

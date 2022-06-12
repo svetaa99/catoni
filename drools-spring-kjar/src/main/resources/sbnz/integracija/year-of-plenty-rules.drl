@@ -12,6 +12,7 @@ import java.util.Map;
 
 
 rule "Play YEAR_OF_PLENTY to build a house"
+    lock-on-active true
     no-loop
     when
         $is: InputState(

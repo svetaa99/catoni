@@ -28,6 +28,7 @@ public class MoveController {
 
     @PostMapping(value = "/answer", produces = "application/json")
     public ResponseEntity<Move> answerTrade(@RequestBody Trade trade){
+        System.out.println("Answer to trade: " + trade);
         Move move = moveService.getMove(inputState, trade);
         return new ResponseEntity<>(move, HttpStatus.CREATED);
     }
@@ -43,4 +44,8 @@ public class MoveController {
         System.out.println(inputState);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Error> badRequest(Exception e){
+        return new ResponseEntity<>(new Error("Bad request"), HttpStatus.BAD_REQUEST);
+    }
 }

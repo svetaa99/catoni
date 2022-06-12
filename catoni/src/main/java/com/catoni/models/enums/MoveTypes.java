@@ -38,6 +38,7 @@ public enum MoveTypes {
     OFFER_TRADE_WITH_PLAYER,
 
     EXECUTE_TRADE,
+    DECLINE_TRADE,
 
     WIN_GAME,
 }
