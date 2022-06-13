@@ -323,7 +323,7 @@ rule "Mairtime trade"
             System.out.println("TOO MUCH CLAY -> DO MAIRTIME TRADE");
             $m.addMove(MoveTypes.OFFER_TRADE_WITH_BANK);
             for(int i = 0; i < excessNeeded; i++){
-                botState.getResources().remove(ResourceTypes.ROCK);
+                botState.getResources().remove(ResourceTypes.CLAY);
             }
             List<ResourceTypes> prev = botState.getResources();
             prev.add(lowestChance);

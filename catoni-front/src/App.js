@@ -319,7 +319,7 @@ function App() {
         })
       })
     });
-    Swal.fire({title:`${fallen}` ,timer: 1000, showConfirmButton: false, width: '100px'});
+    // Swal.fire({title:`${fallen}` ,timer: 1000, showConfirmButton: false, width: '100px'})
   }
 
   function nextToMove(current){
